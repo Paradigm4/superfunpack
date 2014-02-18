@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/scidb/!svn/ver/6630/trunk/extern/MurmurHash
+END
+MurmurHash3.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/scidb/!svn/ver/6630/trunk/extern/MurmurHash/MurmurHash3.cpp
+END
+MurmurHash3.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/scidb/!svn/ver/6630/trunk/extern/MurmurHash/MurmurHash3.h
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/scidb/!svn/ver/6114/trunk/extern/MurmurHash/CMakeLists.txt
+END
