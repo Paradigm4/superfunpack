@@ -43,5 +43,17 @@ iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(03-Mar-2012)]',true), day ,s
 
 Installation
 --
-Run `make` and copy  the `libsuperfunpack.so` plugin to the `lib/scidb/plugins` directory on each of your SciDB cluster nodes.
 
+You'll need SciDB installed, along with the SciDB development header packages. The names vary depending on your operating system type, but they are the package that have "-dev" in the name. You *don't* need the SciDB source code to compile and install this.
+
+Run `make` and copy  the `libsuperfunpack.so` plugin to the `lib/scidb/plugins` directory on each of your SciDB cluster nodes. Here is an example:
+
+```
+git clone https://github.com/Paradigm4/superfunpack.git
+cd superfunpack
+make
+cp libsuperfunpack.so /opt/scidb/13.12/lib/scidb/plugins
+
+iquery -aq "load_library('superfunpack')"
+```
+Remember to copy the plugin to all you SciDB cluster nodes.
