@@ -9,10 +9,8 @@
 #include <vector>
 #include <boost/assign.hpp>
 
-#include "query/Operator.h"
 #include "query/FunctionLibrary.h"
 #include "query/FunctionDescription.h"
-#include "query/TypeSystem.h"
 #include "system/ErrorsLibrary.h"
 
 using namespace std;
@@ -55,7 +53,7 @@ string2l(const Value** args, Value *res, void*)
   char buf[8];
   std::string s = args[0]->getString();
   memset(buf,0,8);
-  snprintf(buf,8,s.c_str());
+  snprintf(buf,8,"%s",s.c_str());
   memcpy(&l, buf, 8);
   res->setInt64(l);
 }
