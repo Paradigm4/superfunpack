@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <errno.h>
+
+#include "pcrs.h"
 
 #include <vector>
 #include <boost/assign.hpp>
@@ -22,6 +25,7 @@ using namespace boost::assign;
  *   strings.
  * - A flexible time parser and formatter to/from all valid strptime/strftime
  *   conversions.
+ * - A perl-style regular expression substitute.
  *   <br> <br>
  *
  * @brief The functions: hashish() and hsihsah() and strpftime.
@@ -65,6 +69,34 @@ l2string(const Value** args, Value *res, void*)
   res->setString(buf);
 }
 
+
+static void
+pcrsgsub(const Value** args, Value *res, void*)
+{
+   pcrs_job *job;
+   const char *e;
+   char *s;
+   char *result;
+   size_t length;
+   int err;
+
+   std::string data = args[0]->getString();
+   std::string expr = args[1]->getString();
+   s = (char *)data.c_str();
+   e = (const char *)expr.c_str();
+ 
+   if (NULL == (job = pcrs_compile_command(e, &err)))
+   {
+/* ERROR HERE */
+     return;
+   }
+   length = strlen(data.c_str());
+   err = pcrs_execute(job, s, length, &result, &length);
+   res->setString(result);
+   free(result);
+   pcrs_free_job(job);
+}
+
 /* 
  * pfconvert (string data, string informat, string outformat) -> string
  * Parse the data string into a time value via strptime format specified
@@ -86,6 +118,7 @@ pfconvert(const Value** args, Value *res, void*)
 }
 
 REGISTER_FUNCTION(strpftime, list_of("string")("string")("string"), "string", pfconvert);
+REGISTER_FUNCTION(rsub, list_of("string")("string"), "string", pcrsgsub);
 REGISTER_FUNCTION(hashish, list_of("string"), "int64", string2l);
 REGISTER_FUNCTION(hsihsah, list_of("int64"), "string", l2string);
 

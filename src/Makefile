@@ -6,15 +6,16 @@ ifeq ($(SCIDB),)
   endif
 endif
 
-CFLAGS=-pedantic -W -Wextra -Wall -Wno-strict-aliasing -Wno-long-long -Wno-unused-parameter -fPIC -D_STDC_FORMAT_MACROS -Wno-system-headers -isystem -O2 -g -DNDEBUG -ggdb3  -D_STDC_LIMIT_MACROS
+CFLAGS=-pedantic -W -Wextra -Wall -Wno-variadic-macros -Wno-strict-aliasing -Wno-long-long -Wno-unused-parameter -fPIC -D_STDC_FORMAT_MACROS -Wno-system-headers -isystem -O2 -g -DNDEBUG -ggdb3  -D_STDC_LIMIT_MACROS
 INC=-I. -DPROJECT_ROOT="\"$(SCIDB)\"" -I"$(SCIDB)/3rdparty/boost/include/" -I"$(SCIDB)/include"
 
-LIBS=-shared -Wl,-soname,libsuperfunpack.so -L. -L"$(SCIDB)/3rdparty/boost/lib" -L"$(SCIDB)/lib" -Wl,-rpath,$(SCIDB)/lib:$(RPATH)
+LIBS=-shared -Wl,-soname,libsuperfunpack.so -lpcre -L. -L"$(SCIDB)/3rdparty/boost/lib" -L"$(SCIDB)/lib" -Wl,-rpath,$(SCIDB)/lib:$(RPATH)
 
 all:
 	@if test ! -d "$(SCIDB)"; then echo  "Error. Try:\n\nmake SCIDB=<PATH TO SCIDB INSTALL PATH>"; exit 1; fi
-	$(CXX) $(CFLAGS) $(INC) -o libsuperfunpack.so plugin.cpp superfunpack.cpp $(LIBS)
+	$(CC) $(CFLAGS) -c pcrs.c -lpcre
+	$(CXX) $(CFLAGS) $(INC) -o libsuperfunpack.so pcrs.o plugin.cpp superfunpack.cpp $(LIBS)
 	@echo "Now copy libsuperfunpack.so to your SciDB lib/scidb/plugins directory and restart SciDB."
 
 clean:
-	rm -f *.so
+	rm -f *.so *.o
