@@ -1,6 +1,6 @@
 all:
 	$(MAKE) -C src
-	cp src/*.so .
+	@cp src/*.so .
 
 clean:
 	$(MAKE) -C src clean
