@@ -34,11 +34,9 @@ tool.
 ```
 string strpftime (input_string, input_format, output_format)
 ```
-> input_string: An input string value representing date and/or time (usually a SciDB string attribute).
-> 
-> input_format: A strptime-valid format describing the input string.
-> 
-> output_format: A strftime-valid output format.
+> * input_string: An input string value representing date and/or time (usually a SciDB string attribute).
+> * input_format: A strptime-valid format describing the input string.
+> * output_format: A strftime-valid output format.
 
 ### Description
 
@@ -76,9 +74,8 @@ Perl-style regular expression substring replacement.
 string rsub (input_string, replacement_expression)
 ```
 
-> input_string: A string value (usually a SciDB attribute)
-> 
-> replacement_expression: A perl-like replacement regular expression.
+> * input_string: A string value (usually a SciDB attribute)
+> * replacement_expression: A perl-like replacement regular expression.
 
 ### Description
 
