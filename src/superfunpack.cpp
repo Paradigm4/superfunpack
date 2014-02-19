@@ -87,8 +87,7 @@ pcrsgsub(const Value** args, Value *res, void*)
  
    if (NULL == (job = pcrs_compile_command(e, &err)))
    {
-/* ERROR HERE */
-     return;
+     throw PLUGIN_USER_EXCEPTION("superfunpack", SCIDB_SE_UDO, SCIDB_USER_ERROR_CODE_START);
    }
    length = strlen(data.c_str());
    err = pcrs_execute(job, s, length, &result, &length);
@@ -129,7 +128,7 @@ static class superfunpack
 public:
   superfunpack()
   {
-    _errors[SCIDB_USER_ERROR_CODE_START] = "Duuuude.";
+    _errors[SCIDB_USER_ERROR_CODE_START] = "Duuuude. Your regular expression failed to compile.";
     scidb::ErrorsLibrary::getInstance()->registerErrors("superfunpack", &_errors);
   }
 
