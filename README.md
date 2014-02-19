@@ -35,7 +35,9 @@ tool.
 string strpftime (input_string, input_format, output_format)
 ```
 > input_string: An input string value representing date and/or time (usually a SciDB string attribute).
+> 
 > input_format: A strptime-valid format describing the input string.
+> 
 > output_format: A strftime-valid output format.
 
 ### Description
@@ -46,7 +48,7 @@ or time, for example, to pick out the week of the year, or the weekday name, or
 the name of the month, etc. It can understand any str[pf]time time format.
 
 
-* Example 1: Pick out the week of the year.
+#### Example 1: Pick out the week of the year.
 
 ```
 iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(03-Mar-2012)]',true), woy , int64(strpftime(s, '%d-%m-%Y', '%U')))"
@@ -54,7 +56,7 @@ iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(03-Mar-2012)]',true), woy , 
 {0} '03-Mar-2012',1
 ```
 
-* Example 2: Print the full weekday name of a date in your locale.
+#### Example 2: Print the full weekday name of a date in your locale.
 
 ```
 iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(03-Mar-2012)]',true), day ,strpftime(s, '%d-%m-%Y', '%A'))"
@@ -73,7 +75,9 @@ Perl-style regular expression substring replacement.
 ```
 string rsub (input_string, replacement_expression)
 ```
+
 > input_string: A string value (usually a SciDB attribute)
+> 
 > replacement_expression: A perl-like replacement regular expression.
 
 ### Description
@@ -81,7 +85,7 @@ string rsub (input_string, replacement_expression)
 Search for and replace substrings.
 
 
-### Example: Replace the first occurrence of a subtring
+#### Example: Replace the first occurrence of a subtring
 
 ```
 iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(\'Paul Brown is a serious serious man.\')]',true), r, rsub(s,'s/serious/silly/'))"
@@ -89,7 +93,7 @@ iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(\'Paul Brown is a serious se
 {0} 'Paul Brown is a serious serious man.','Paul Brown is a silly serious man.'
 ```
 
-### Example: Replace all occurrences of a subtring
+#### Example: Replace all occurrences of a subtring
 
 ```
 iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(\'Paul Brown is a serious serious man.\')]',true), r, rsub(s,'s/serious/silly/g'))"
