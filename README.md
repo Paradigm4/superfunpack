@@ -97,3 +97,33 @@ iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(\'Paul Brown is a serious se
 {i} s,r
 {0} 'Paul Brown is a serious serious man.','Paul Brown is a silly silly man.'
 ```
+
+
+## sleep 
+
+SciDB nap time.
+
+### Synopsis
+
+```
+uint32 (time)
+```
+
+> * time: a unit32 value specifying time to sleep in seconds.
+
+### Description
+
+Invoke the sleep system call. Returns zero if the requested time has elapsed, or the number of seconds left to sleep, if the call was interrupted by a signal handler.
+
+
+#### Example
+
+```
+# Sleep for 6 seconds (1 + 2 + 3):
+
+iquery -aq "apply(build(<t: uint64>[i=1:3,3,0], i), zzz, sleep(t))"
+{i} t,zzz
+{1} 1,0
+{2} 2,0
+{3} 3,0
+```

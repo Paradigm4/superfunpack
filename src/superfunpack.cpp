@@ -24,12 +24,13 @@ using namespace boost::assign;
  * - A flexible time parser and formatter to/from all valid strptime/strftime
  *   conversions.
  * - A perl-style regular expression substitute.
+ * - Sleep, per chance to dream.
  *   <br> <br>
  *
- * @brief The functions: hashish() and hsihsah() and strpftime.
+ * @brief The functions: hashish and hsihsah,  strpftime and sleep.
  *
  * @par Synopsis: hashish (string) / hsihsah (int64), strpftime (string data,
- * string input_format, string output_format)
+ * string input_format, string output_format), sleep(uint32 time)
  *
  * @par Examples:
  * <br>
@@ -65,6 +66,13 @@ l2string(const Value** args, Value *res, void*)
   int64_t l = (int64_t)args[0]->getInt64();
   memcpy(buf, &l, 8);
   res->setString(buf);
+}
+
+static void
+dream(const Value** args, Value *res, void*)
+{
+  uint32_t l = (uint32_t)args[0]->getUint32();
+  res->setUint32(sleep(l));
 }
 
 
@@ -118,6 +126,7 @@ REGISTER_FUNCTION(strpftime, list_of("string")("string")("string"), "string", pf
 REGISTER_FUNCTION(rsub, list_of("string")("string"), "string", pcrsgsub);
 REGISTER_FUNCTION(hashish, list_of("string"), "int64", string2l);
 REGISTER_FUNCTION(hsihsah, list_of("int64"), "string", l2string);
+REGISTER_FUNCTION(sleep, list_of("uint32"), "uint32", dream);
 
 
 // general class for registering/unregistering user defined SciDB objects
