@@ -56,6 +56,10 @@ double fisher_test_odds_ratio (double x, double m, double n, double k)
 
 ### Example
 
+## pyhper
+## dyhper
+## qyhper
+
 ## strpftime
 
 The strpftime function is a flexible date/time string parsing and conversion
