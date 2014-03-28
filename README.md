@@ -43,13 +43,13 @@ double fisher_test_odds_ratio (double x, double m, double n, double k)
 > * n: Marginal sum of  the 2nd column ('no' events in 1st class)
 > * k: Marginal sum of the 1st row ('yes' events in 2nd class)
 
-|                 |     |  Classification | I        |  SUM    |
-|                 |     | YES        |  NO         |           |
-|-----------------|-----|------------|-------------|-----------|
-| Classification  | YES |  x         |   a         | k = x + a |
-|     II          | NO  |  b         |   c         |           |
-|-----------------|-----|------------|-------------|-----------|
-|                 |     | m = x + b  | n = a + c   |           |
+                 |     |  Classification | I           |  SUM    |
+                 |     | YES             |  NO         |           |
+-----------------|-----|-----------------|-------------|-----------|
+ Classification  | YES |  x              |   a         | k = x + a |
+     II          | NO  |  b              |   c         |           |
+-----------------|-----|-----------------|-------------|-----------|
+                 |     | m = x + b       | n = a + c   |           |
 
 ### Example
 
