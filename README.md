@@ -325,8 +325,8 @@ iquery -aq "apply(build(<t: uint64>[i=1:3,3,0], i), zzz, sleep(t))"
 
 ## Licenses
 
-Superfunpack is Copyright (c) 2014 by Paradigm4, Inc. <blewis@paradigm4.com>
-and is licenensed under GPL 2.
+Superfunpack is Copyright (c) 2014 by Paradigm4, Inc., contact Bryan Lewis
+<blewis@paradigm4.com>, and is licenensed under GPL 2.
 
 The code in superfunpack incorporates pcrs code Copyright (C) 2000, 2001 by
 Andreas S. Oesterhelt  <andreas@oesterhelt.org> (LGPL 2), R Copyright (C)
