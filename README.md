@@ -29,12 +29,12 @@ Estimate the conditional odds ratio for a one-sided Fisher's exact test for
 testing the null of independence of rows and columns in a 2x2 contingency table
 with fixed marginals.
 
-Use this function together with the `pyhper` hypergeometric cumulative
+Use this function together with the `phyper` hypergeometric cumulative
 distribution function described below to conduct one-sided Fisher's exact tests on 2x2
 contingency tables.
 
 We show in the examples comparison with R's fisher.test function. The SciDB
-examples below computes only one-sided Fisher's exact tests correspoinding to
+examples below computes only one-sided Fisher's exact tests corresponding to
 the `alternative=less` option in the R package.
 
 For 2 by 2 tables, the null of conditional independence is equivalent to the
@@ -145,11 +145,11 @@ apply(
 {0} 2, 12, 18, 17, 0.000465181, 0.0469366
 ```
 
-In practice SciDB can compute Fisher's exact test across many vaules in one
+In practice SciDB can compute Fisher's exact test across many values in one
 step using combinations of aggregate and apply.
 
 
-## pyhper, dhyper, and qhyper
+## phyper, dhyper, and qhyper
 
 The hypergeometric distribution is used for sampling *without*
 replacement.  The density of this distribution with parameters
@@ -267,7 +267,7 @@ string rsub (input_string, replacement_expression)
 Search for and replace substrings.
 
 
-#### Example: Replace the first occurrence of a subtring
+#### Example: Replace the first occurrence of a substring
 
 ```
 iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(\'Paul Brown is a serious serious man.\')]',true), r, rsub(s,'s/serious/silly/'))"
@@ -275,7 +275,7 @@ iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(\'Paul Brown is a serious se
 {0} 'Paul Brown is a serious serious man.','Paul Brown is a silly serious man.'
 ```
 
-#### Example: Replace all occurrences of a subtring
+#### Example: Replace all occurrences of a substring
 
 ```
 iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(\'Paul Brown is a serious serious man.\')]',true), r, rsub(s,'s/serious/silly/g'))"
