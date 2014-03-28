@@ -156,11 +156,7 @@ step using combinations of aggregate and apply.
      URL http://www.R-project.org/.
 2. http://www.boost.org/doc/libs/1_55_0/libs/math/doc/html/dist.html
 3. http://www.boost.org/doc/libs/1_55_0/libs/math/doc/html/math_toolkit/internals1/roots2.html
-4.     Agresti, A. (1990) _Categorical data analysis_.  New York: Wiley.  Pages 59-66.
-5.      Agresti, A. (2002) _Categorical data analysis_. Second edition.  New York: Wiley.  Pages 91-101.
-6.     Fisher, R. A. (1935) The logic of inductive inference.  _Journal of the Royal Statistical Society Series A_ *98*, 39-54.
-7.     Fisher, R. A. (1962) Confidence limits for a cross-product ratio.  _Australian Journal of Statistics_ *4*, 41.
-8.     Fisher, R. A. (1970) _Statistical Methods for Research Workers._ Oliver & Boyd.
+4.     Fisher, R. A. (1935) The logic of inductive inference.  _Journal of the Royal Statistical Society Series A_ *98*, 39-54.
 
 
 ## phyper, dhyper, and qhyper
