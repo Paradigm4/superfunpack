@@ -22,6 +22,9 @@ iquery -aq "load_library('superfunpack')"
 ```
 Remember to copy the plugin to all you SciDB cluster nodes.
 
+Note that if you're *re-installing* superfunpack, you'll need to restart
+SciDB for the new plugin to take effect.
+
 
 ## fisher\_test\_odds\_ratio
 
@@ -30,11 +33,10 @@ testing the null of independence of rows and columns in a 2x2 contingency table
 with fixed marginals.
 
 Use this function together with the `phyper` hypergeometric cumulative
-distribution function described below to conduct one-sided Fisher's exact tests on 2x2
-contingency tables.
-
-The SciDB examples below compute one-sided Fisher's exact tests corresponding
-to the `alternative=less` option in the R package, also shown for comparison.
+distribution function described below to conduct one-sided Fisher's exact tests
+on 2x2 contingency tables.  The SciDB examples below compute one-sided Fisher's
+exact tests corresponding to the `alternative=less` option in the R package,
+also shown for comparison.
 
 From the R documentation of fisher.test:
 
@@ -71,7 +73,7 @@ a contingency table comparing two classifications labeled I and II:
 
 Consider the following examples computing in R:
 
-```
+```R
 TeaTasting <- matrix(c(3, 1, 1, 3), nrow = 2)
 
 # The data look like:
