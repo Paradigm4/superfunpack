@@ -43,20 +43,20 @@ double fisher_test_odds_ratio (double x, double m, double n, double k)
 > * n: Marginal sum of  the 2nd column ('no' events in 1st class)
 > * k: Marginal sum of the 1st row ('yes' events in 2nd class)
 
+The following table illustrates the parameters x, m, n, and k in
+a contingency table comparing two classifications labeled I and II:
 
-```
-                          Classification   I
-                 |     | YES             |  NO         |  SUM         
------------------|-----|-----------------|-------------|-----------
- Classification  | YES |  x              |   a         | k = x + a 
-     II          | NO  |  b              |   c         |           
------------------|-----|-----------------|-------------|-----------
-                 |     | m = x + b       | n = a + c   |           
-```
+|                  | Class I YES   | Class I NO  | SUM       |
+| ---------------- | :-----------: | :---------: | --------: | 
+| **Class II YES** | x             | a           | k = x + a |
+| **Class II NO**  | b             | c           |           |
+| **SUM**          | m = x + b     | n = a + c   |           |
+
 
 ### Example
 
 ## pyhper
+
 ## dyhper
 ## qyhper
 
