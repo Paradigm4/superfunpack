@@ -1,3 +1,20 @@
+/*
+**
+* BEGIN_COPYRIGHT
+*
+* This file is part of SciDB.  Copyright (C) 2008-2014 SciDB, Inc.
+*
+* Superfunpack is free software: you can redistribute it and/or modify it under
+* the terms of the GNU General Public License version 2 as published by the
+* Free Software Foundation.
+*
+* SciDB is distributed "AS-IS" AND WITHOUT ANY WARRANTY OF ANY KIND, INCLUDING
+* ANY IMPLIED WARRANTY OF MERCHANTABILITY, NON-INFRINGEMENT, OR FITNESS FOR A
+* PARTICULAR PURPOSE. See the GNU General Public License version 2 for the
+* complete license terms.
+*
+* END_COPYRIGHT
+*/
 #define _XOPEN_SOURCE
 #include <stdio.h>
 #include <string.h>
@@ -148,16 +165,15 @@ class mnhyper
     {
       int j, ns;
       double logncp, lo, hi, maxd, sumd, sum;
-      double *support, *logdc, *d;
       if(invert && ncp!=0) ncp = 1/ncp;
       hypergeometric_distribution <> h(m, k, m+n);
       lo = round(max(0.0, k-n));
       hi = round(min(k, m));
       ns = hi - lo + 1;
       if(ns<=0) return 0;
-      support = (double *)malloc(ns*sizeof(double));
-      logdc   = (double *)malloc(ns*sizeof(double));
-      d       = (double *)malloc(ns*sizeof(double));
+      vector<double> support(ns);
+      vector<double> logdc(ns);
+      vector<double> d(ns);
       logncp    = log(ncp);
       maxd    = -INFINITY;
       sumd    = sum = 0;
@@ -177,9 +193,6 @@ class mnhyper
       {
         sum  = sum + support[j]*d[j]/sumd;
       }
-      if(support) free(support);
-      if(logdc)   free(logdc);
-      if(d)       free(d);
       return sum - x;
     }
 };

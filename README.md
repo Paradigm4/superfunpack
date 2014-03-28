@@ -37,6 +37,8 @@ We show in the examples comparison with R's fisher.test function. The SciDB
 examples below computes only one-sided Fisher's exact tests corresponding to
 the `alternative=less` option in the R package.
 
+From the R documentation of fisher.test:
+
 For 2 by 2 tables, the null of conditional independence is equivalent to the
 hypothesis that the odds ratio equals one.  "Exact" inference can be based on
 observing that in general, given all marginal totals fixed, the first element
@@ -147,6 +149,19 @@ apply(
 
 In practice SciDB can compute Fisher's exact test across many values in one
 step using combinations of aggregate and apply.
+
+### References
+
+1.     R Core Team (2013). R: A language and environment for statistical
+     computing. R Foundation for Statistical Computing, Vienna, Austria.
+     URL http://www.R-project.org/.
+2. http://www.boost.org/doc/libs/1_55_0/libs/math/doc/html/dist.html
+3. http://www.boost.org/doc/libs/1_55_0/libs/math/doc/html/math_toolkit/internals1/roots2.html
+4.     Agresti, A. (1990) _Categorical data analysis_.  New York: Wiley.  Pages 59-66.
+5.      Agresti, A. (2002) _Categorical data analysis_. Second edition.  New York: Wiley.  Pages 91-101.
+6.     Fisher, R. A. (1935) The logic of inductive inference.  _Journal of the Royal Statistical Society Series A_ *98*, 39-54.
+7.     Fisher, R. A. (1962) Confidence limits for a cross-product ratio.  _Australian Journal of Statistics_ *4*, 41.
+8.     Fisher, R. A. (1970) _Statistical Methods for Research Workers._ Oliver & Boyd.
 
 
 ## phyper, dhyper, and qhyper
@@ -312,3 +327,13 @@ iquery -aq "apply(build(<t: uint64>[i=1:3,3,0], i), zzz, sleep(t))"
 {2} 2,0
 {3} 3,0
 ```
+
+## Licenses
+
+Superfunpack is Copyright (c) 2014 by Paradigm4, Inc. <blewis@paradigm4.com>
+and is licenensed under GPL 2.
+
+The code in superfunpack incorporates pcrs code Copyright (C) 2000, 2001 by
+Andreas S. Oesterhelt  <andreas@oesterhelt.org> (LGPL 2), R Copyright (C)
+1992-1996, 1998-2012 Free Software Foundation, Inc. (GPL 2), and boost (Boost
+Software License - Version 1.0 - August 17, 2003).
