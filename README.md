@@ -71,7 +71,7 @@ a contingency table comparing two classifications labeled I and II:
 
 ### Examples
 
-Consider the following examples computing in R:
+Consider the following examples computed in R:
 
 ```R
 TeaTasting <- matrix(c(3, 1, 1, 3), nrow = 2)
