@@ -25,13 +25,26 @@ Remember to copy the plugin to all you SciDB cluster nodes.
 
 ## fisher\_test\_odds\_ratio
 
-Estimate the conditional odds ratio for Fisher's exact test for testing the
-null of independence of rows and columns in a 2x2 contingency table with fixed
-marginals.
+Estimate the conditional odds ratio for a one-sided Fisher's exact test for
+testing the null of independence of rows and columns in a 2x2 contingency table
+with fixed marginals.
 
 Use this function together with the `pyhper` hypergeometric cumulative
-distribution function described below to conduct Fisher's exact tests on 2x2
+distribution function described below to conduct one-sided Fisher's exact tests on 2x2
 contingency tables.
+
+We show in the examples comparison with R's fisher.test function. The SciDB
+examples below computes only one-sided Fisher's exact tests correspoinding to
+the `alternative=less` option in the R package.
+
+For 2 by 2 tables, the null of conditional independence is equivalent to the
+hypothesis that the odds ratio equals one.  "Exact" inference can be based on
+observing that in general, given all marginal totals fixed, the first element
+of the contingency table has a non-central hypergeometric distribution with
+non-centrality parameter given by the odds ratio (Fisher, 1935).  The
+alternative hypothesis for a one-sided test is based on the odds ratio being
+smaller than the estimated value.
+
 
 ### Synopsis
 
@@ -53,12 +66,148 @@ a contingency table comparing two classifications labeled I and II:
 | **SUM**          | m = x + b     | n = a + c   |           |
 
 
-### Example
+### Examples
 
-## pyhper
+Consider the following examples computing in R:
 
-## dyhper
-## qyhper
+```
+TeaTasting <- matrix(c(3, 1, 1, 3), nrow = 2)
+
+# The data look like:
+TeaTasting
+     [,1] [,2]
+[1,]    3    1
+[2,]    1    3
+
+fisher.test(TeaTasting,alternative="less")
+
+      Fisher's Exact Test for Count Data
+
+data:  TeaTasting
+p-value = 0.9857
+alternative hypothesis: true odds ratio is less than 1
+95 percent confidence interval:
+   0.0000 306.2469
+sample estimates:
+odds ratio 
+  6.408309 
+
+
+
+Convictions <- matrix(c(2, 10, 15, 3), nrow = 2)
+
+# These data look like:
+Convictions
+     [,1] [,2]
+[1,]    2   15
+[2,]   10    3
+
+fisher.test(Convictions,alternative="less")
+
+      Fisher's Exact Test for Count Data
+
+data:  Convictions
+p-value = 0.0004652
+alternative hypothesis: true odds ratio is less than 1
+95 percent confidence interval:
+ 0.0000000 0.2849601
+sample estimates:
+odds ratio 
+0.04693661 
+```
+
+Let's compute the same tests in SciDB. First we use the table above to compute
+the x, m, n, and k values for each example. For the TeaTasting data, we have 
+x=3, m = n = k = 4. And for the Convictions table, we get x=2, m=12, 
+n=18, k=17.
+
+```
+TeaTasting table result:
+
+apply(
+  apply(build(<x:int64>[i=0:0,1,0],3),m,4,n,4,k,4),
+  pvalue, phyper(x,m,n,k),
+  odds_ratio_estimate, fisher_test_odds_ratio(x,m,n,k)
+)
+{i} x, m, n, k, pvalue,   odds_ratio_estimate
+{0} 3, 4, 4, 4, 0.985714, 6.40832
+
+
+Convictions table result:
+
+apply(
+  apply(build(<x:int64>[i=0:0,1,0],2),m,12,n,18,k,17),
+  pvalue, phyper(x,m,n,k),
+  odds_ratio_estimate, fisher_test_odds_ratio(x,m,n,k)
+)
+
+{i} x, m,  n,  k,  pvalue,      odds_ratio_estimate
+{0} 2, 12, 18, 17, 0.000465181, 0.0469366
+```
+
+In practice SciDB can compute Fisher's exact test across many vaules in one
+step using combinations of aggregate and apply.
+
+
+## pyhper, dhyper, and qhyper
+
+The hypergeometric distribution is used for sampling *without*
+replacement.  The density of this distribution with parameters
+m, n and k is:
+
+>       p(x) =   choose(m, x) * choose(n, k-x) / choose(m+n, k)      
+>       for x = 0, ..., k.  
+
+The p-quantile is defined as the smallest value x such that F(x) >= p, where F
+is the cumulative distribution function and 0 <= p <= 1.
+
+Use the phyper function together with the fisher_test_odds_ratio function above
+to compute Fishers exact tests on 2x2 contingency tables.
+
+### Synopsis
+
+```
+double phyper(x, m, n, k)
+double dhyper(x, m, n, k)
+double qhyper(p, m, n, k)
+```
+where,
+
+> * x: the number of white balls drawn without replacement from an urn which contains both black and white balls.
+> * p: probability, it must be between 0 and 1.
+> * m: the number of white balls in the urn.
+> * m: the number of black balls in the urn.
+> * k: the number of balls drawn from the urn.
+
+
+### Details
+
+dhyper gives the cumulative density function, phyper gives the distribution
+function, and qhyper gives the quantile function.
+
+### Examples
+
+```
+apply(
+  apply(build(<x:int64>[i=0:0,1,0],3),m,10,n,7,k,8),
+  pvalue, phyper(x,m,n,k),
+  cdf, dhyper(x,m,n,k)
+)
+
+{i} x, m,  n, k, pvalue,            cdf
+{0} 3, 10, 7, 8, 0.117030028794735, 0.103661044837515
+
+
+
+apply(
+  apply(build(<q:double>[i=0:0,1,0],0.117030028794735),m,10,n,7,k,8),
+  quantile, qhyper(q,m,n,k)
+)
+
+{i} q,       m,  n, k, quantile
+{0} 0.11703, 10, 7, 8, 3
+```
+
 
 ## strpftime
 

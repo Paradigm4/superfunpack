@@ -132,7 +132,10 @@ pfconvert(const Value** args, Value *res, void*)
 }
 
 
-/* Hypergeometric stuff in support of Fisher's exact test */
+/* ***************************************************************************
+ *       Hypergeometric stuff in support of Fisher's exact test 
+ * ***************************************************************************
+ */
 class mnhyper
 {
   double m, n, k, x;
@@ -209,13 +212,15 @@ hyper_mle(double x, double m, double n, double k)
   Result bracket;
   if(mu>x)
   {
-    bracket = boost::math::tools::toms748_solve(f, 0.0, 1.0, tol, max_iter);
+    bracket = boost::math::tools::toms748_solve(f, 0.0000001, 1.0, tol, max_iter);
     root    = bracket.first;
+    if((f(bracket.first) * f(bracket.second)) >0) root = NAN;
   } else if(mu<x)
   {
     f.inv(true);
     bracket = boost::math::tools::toms748_solve(f, 0.0000001, 1.0, tol, max_iter);
     root    = 1/bracket.first;
+    if((f(bracket.first) * f(bracket.second)) >0) root = NAN;
   } else
   {
     root = 1;
@@ -310,7 +315,7 @@ REGISTER_FUNCTION(hsihsah, list_of("int64"), "string", l2string);
 REGISTER_FUNCTION(sleep, list_of("uint32"), "uint32", dream);
 REGISTER_FUNCTION(dhyper, list_of("double")("double")("double")("double"), "double", superfun_dhyper);
 REGISTER_FUNCTION(phyper, list_of("double")("double")("double")("double"), "double", superfun_phyper);
-REGISTER_FUNCTION(phyper, list_of("double")("double")("double")("double"), "double", superfun_qhyper);
+REGISTER_FUNCTION(qhyper, list_of("double")("double")("double")("double"), "double", superfun_qhyper);
 REGISTER_FUNCTION(fisher_test_odds_ratio, list_of("double")("double")("double")("double"), "double", superfun_conditional_odds_ratio);
 
 // general class for registering/unregistering user defined SciDB objects
