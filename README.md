@@ -33,9 +33,8 @@ Use this function together with the `phyper` hypergeometric cumulative
 distribution function described below to conduct one-sided Fisher's exact tests on 2x2
 contingency tables.
 
-We show in the examples comparison with R's fisher.test function. The SciDB
-examples below computes only one-sided Fisher's exact tests corresponding to
-the `alternative=less` option in the R package.
+The SciDB examples below compute one-sided Fisher's exact tests corresponding
+to the `alternative=less` option in the R package, also shown for comparison.
 
 From the R documentation of fisher.test:
 
