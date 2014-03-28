@@ -23,6 +23,35 @@ iquery -aq "load_library('superfunpack')"
 Remember to copy the plugin to all you SciDB cluster nodes.
 
 
+## fisher\_test\_odds\_ratio
+
+Estimate the conditional odds ratio for Fisher's exact test for testing the
+null of independence of rows and columns in a 2x2 contingency table with fixed
+marginals.
+
+Use this function together with the `pyhper` hypergeometric cumulative
+distribution function described below to conduct Fisher's exact tests on 2x2
+contingency tables.
+
+### Synopsis
+
+```
+double fisher_test_odds_ratio (double x, double m, double n, double k)
+```
+> * x: Number of 'yes' events in both classifications (see table below)
+> * m: Marginal sum of the 1st column ('yes' events in 1st class)
+> * n: Marginal sum of  the 2nd column ('no' events in 1st class)
+> * k: Marginal sum of the 1st row ('yes' events in 2nd class)
+
+|                 |     |  Classification I        |  SUM      |
+|                 |     | YES        |  NO         |           |
+----------------------------------------------------------------
+| Classification  | YES |  x         |   a         | k = x + a |
+|     II          | NO  |  b         |   c         |           |
+----------------------------------------------------------------
+|                 |     | m = x + b  | n = a + c   |           |
+
+### Example
 
 ## strpftime
 
