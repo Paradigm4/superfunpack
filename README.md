@@ -148,7 +148,7 @@ apply(
 {0} 2, 12, 18, 17, 0.000465181, 0.0469366
 ```
 
-In practice SciDB can compute Fisher's exact test across many values in one
+In practice SciDB can compute Fisher's exact test across many contingency tables in one
 step using combinations of aggregate and apply.
 
 ### References
