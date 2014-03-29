@@ -32,8 +32,7 @@ Estimate the conditional odds ratio for a one-sided Fisher's exact test for
 testing the null of independence of rows and columns in a 2x2 contingency table
 with fixed marginals.
 
-Use this function together with the `phyper` hypergeometric cumulative
-distribution function described below to conduct one-sided Fisher's exact tests
+Use this function together with the `phyper` hypergeometric density function described below to conduct one-sided Fisher's exact tests
 on 2x2 contingency tables.  The SciDB examples below compute one-sided Fisher's
 exact tests corresponding to the `alternative=less` option in the R package,
 also shown for comparison.
