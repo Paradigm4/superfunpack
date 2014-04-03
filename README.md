@@ -1,4 +1,4 @@
-# superfunpack
+#  superfunpack
 
 Miscellaneous scalar functions for SciDB that are super fun.
 
@@ -32,10 +32,11 @@ Estimate the conditional odds ratio for a one-sided Fisher's exact test for
 testing the null of independence of rows and columns in a 2x2 contingency table
 with fixed marginals.
 
-Use this function together with the `phyper` hypergeometric density function described below to conduct one-sided Fisher's exact tests
-on 2x2 contingency tables.  The SciDB examples below compute one-sided Fisher's
-exact tests corresponding to the `alternative=less` option in the R package,
-also shown for comparison.
+Use this function together with the `phyper` hypergeometric density function
+described below to conduct one-sided Fisher's exact tests on 2x2 contingency
+tables.  The SciDB examples below compute one-sided Fisher's exact tests
+corresponding to the `alternative=less` option in the R package, also shown for
+comparison.
 
 From the R documentation of fisher.test:
 
@@ -128,7 +129,7 @@ TeaTasting table result:
 
 apply(
   apply(build(<x:int64>[i=0:0,1,0],3),m,4,n,4,k,4),
-  pvalue, phyper(x,m,n,k),
+  pvalue, phyper(x,m,n,k,true),
   odds_ratio_estimate, fisher_test_odds_ratio(x,m,n,k)
 )
 {i} x, m, n, k, pvalue,   odds_ratio_estimate
@@ -139,7 +140,7 @@ Convictions table result:
 
 apply(
   apply(build(<x:int64>[i=0:0,1,0],2),m,12,n,18,k,17),
-  pvalue, phyper(x,m,n,k),
+  pvalue, phyper(x,m,n,k,true),
   odds_ratio_estimate, fisher_test_odds_ratio(x,m,n,k)
 )
 
@@ -178,9 +179,9 @@ to compute Fishers exact tests on 2x2 contingency tables.
 ### Synopsis
 
 ```
-double phyper(x, m, n, k)
 double dhyper(x, m, n, k)
-double qhyper(p, m, n, k)
+double phyper(x, m, n, k, lower_tail)
+double qhyper(p, m, n, k, lower_tail)
 ```
 where,
 
@@ -189,6 +190,7 @@ where,
 > * m: the number of white balls in the urn.
 > * m: the number of black balls in the urn.
 > * k: the number of balls drawn from the urn.
+> * lower_tail: (boolean) If true, return the lower tail value, otherwise the upper tail value.
 
 
 ### Details
@@ -201,7 +203,7 @@ function, and qhyper gives the quantile function.
 ```
 apply(
   apply(build(<x:int64>[i=0:0,1,0],3),m,10,n,7,k,8),
-  pvalue, phyper(x,m,n,k),
+  pvalue, phyper(x,m,n,k,true),
   cdf, dhyper(x,m,n,k)
 )
 
@@ -212,7 +214,7 @@ apply(
 
 apply(
   apply(build(<q:double>[i=0:0,1,0],0.117030028794735),m,10,n,7,k,8),
-  quantile, qhyper(q,m,n,k)
+  quantile, qhyper(q,m,n,k,true)
 )
 
 {i} q,       m,  n, k, quantile

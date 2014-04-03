@@ -287,6 +287,7 @@ superfun_dhyper(const Value** args, Value *res, void*)
  * @param m (double) The number of white balls in the urn.
  * @param n (double) The number of black balls in the urn.
  * @param k (double) The number of balls drawn from the urn. 
+ * @param lower_tail (boolean) TRUE for lowe tail quantile, FALSE for upper.
  * @returns The hypergeometric cumulative distribution up to x
  */
 static void
@@ -296,8 +297,14 @@ superfun_phyper(const Value** args, Value *res, void*)
   double m = args[1]->getDouble();
   double n = args[2]->getDouble();
   double k = args[3]->getDouble();
+  bool lower_tail = args[4]->getBool();
   hypergeometric_distribution <> h(m, k, m+n);
-  res->setDouble(boost::math::cdf(h, x));
+  if(lower_tail)
+  {
+    res->setDouble(boost::math::cdf(h, x));
+    return;
+  }
+  res->setDouble(boost::math::cdf(complement(h, x)));
 }
 
 /*
@@ -306,6 +313,7 @@ superfun_phyper(const Value** args, Value *res, void*)
  * @param m (double) The number of white balls in the urn.
  * @param n (double) The number of black balls in the urn.
  * @param k (double) The number of balls drawn from the urn. 
+ * @param lower_tail (boolean) TRUE for lowe tail quantile, FALSE for upper.
  * @returns The number of white balls drawn without replacement
  *          from an urn that contains both black and white balls.
  */
@@ -316,8 +324,14 @@ superfun_qhyper(const Value** args, Value *res, void*)
   double m = args[1]->getDouble();
   double n = args[2]->getDouble();
   double k = args[3]->getDouble();
+  bool lower_tail = args[4]->getBool();
   hypergeometric_distribution <> h(m, k, m+n);
-  res->setDouble(boost::math::quantile(h, p));
+  if(lower_tail)
+  {
+    res->setDouble(boost::math::quantile(h, p));
+    return;
+  }
+  res->setDouble(boost::math::quantile(complement(h, p)));
 }
 
 
@@ -327,8 +341,8 @@ REGISTER_FUNCTION(hashish, list_of("string"), "int64", string2l);
 REGISTER_FUNCTION(hsihsah, list_of("int64"), "string", l2string);
 REGISTER_FUNCTION(sleep, list_of("uint32"), "uint32", dream);
 REGISTER_FUNCTION(dhyper, list_of("double")("double")("double")("double"), "double", superfun_dhyper);
-REGISTER_FUNCTION(phyper, list_of("double")("double")("double")("double"), "double", superfun_phyper);
-REGISTER_FUNCTION(qhyper, list_of("double")("double")("double")("double"), "double", superfun_qhyper);
+REGISTER_FUNCTION(phyper, list_of("double")("double")("double")("double")("bool"), "double", superfun_phyper);
+REGISTER_FUNCTION(qhyper, list_of("double")("double")("double")("double")("bool"), "double", superfun_qhyper);
 REGISTER_FUNCTION(fisher_test_odds_ratio, list_of("double")("double")("double")("double"), "double", superfun_conditional_odds_ratio);
 
 // general class for registering/unregistering user defined SciDB objects
