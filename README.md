@@ -123,7 +123,7 @@ sample estimates:
 odds ratio 
 0.04693661 
 ```
-And a two-sided test:
+Let's compute a two-sided test on the same convictions table data:
 ```R
 fisher.test(Convictions, alternative="two.sided")
 ```
