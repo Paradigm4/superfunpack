@@ -26,8 +26,7 @@ Note that if you're *re-installing* superfunpack, you'll need to restart
 SciDB for the new plugin to take effect.
 
 
-## fisher\_test\_odds\_ratio
-## fisher\_test\_p\_value
+## fisher\_test\_odds\_ratio and fisher\_test\_p\_value
 
 Estimate the conditional odds ratio or p value Fisher's exact test for testing
 the null of independence of rows and columns in a 2x2 contingency table with
