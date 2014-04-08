@@ -157,10 +157,12 @@ class mnhyper
 {
   double m, n, k, x;
   bool invert;
+  bool dnhyper;
 
   public:
     mnhyper(double,double,double,double);
     void inv(bool);
+    void dn(bool);
     double operator()(double ncp)
     {
       int j, ns;
@@ -171,12 +173,15 @@ class mnhyper
       hi = round(min(k, m));
       ns = hi - lo + 1;
       if(ns<=0) return 0;
+      double relerr = 1.0000001;
+      double dj, xminuslo = 0;
       vector<double> support(ns);
       vector<double> logdc(ns);
       vector<double> d(ns);
       logncp    = log(ncp);
       maxd    = -INFINITY;
       sumd    = sum = 0;
+      xminuslo = x - lo;
       for(j=0;j<ns;++j)
       {
         support[j] = lo + j;
@@ -189,11 +194,21 @@ class mnhyper
         d[j] = exp(d[j] - maxd);
         sumd = sumd + d[j];
       }
+      if(dnhyper)
+      {
+        xminuslo = relerr*d[x - lo]/sumd;
+      }
       for(j=0;j<ns;++j)
       {
-        sum  = sum + support[j]*d[j]/sumd;
+        if(dnhyper)
+        {
+          dj = d[j]/sumd;
+          if(dj < xminuslo) sum = sum + dj;
+        }
+        else        sum  = sum + support[j]*d[j]/sumd;
       }
-      return sum - x;
+      if(!dnhyper) sum = sum - x;
+      return sum;
     }
 };
 mnhyper::mnhyper(double M, double N, double K, double X)
@@ -203,11 +218,17 @@ mnhyper::mnhyper(double M, double N, double K, double X)
   k = K;
   x = X;
   invert = false;
+  dnhyper = false;
 }
 void
 mnhyper::inv(bool b)
 {
   invert = b;
+}
+void
+mnhyper::dn(bool b)
+{
+  dnhyper = true;
 }
 
 double
@@ -261,6 +282,41 @@ superfun_conditional_odds_ratio(const Value** args, Value *res, void*)
 }
 
 /*
+ * @brief Fisher exact test p-value
+ * @param x (double) The number of white balls drawn without replacement
+ *           from an urn that contains both black and white balls.
+ * @param m (double) The number of white balls in the urn.
+ * @param n (double) The number of black balls in the urn.
+ * @param k (double) The number of balls drawn from the urn. 
+ * @param alternative (string) one of {"less","greater","two.sided"}
+ * @returns The conditional odds ratio for the one-tailed Fisher exact test.
+ */
+static void
+superfun_fisher_p_value(const Value** args, Value *res, void*)
+{
+  double x = args[0]->getDouble();
+  double m = args[1]->getDouble();
+  double n = args[2]->getDouble();
+  double k = args[3]->getDouble();
+  string a = args[4]->getString();
+  hypergeometric_distribution <> h(m, k, m+n);
+  if(a == "less")
+  {
+    res->setDouble(boost::math::cdf(h, x));
+    return;
+  }
+  if(a == "greater")
+  {
+    res->setDouble(boost::math::cdf(complement(h, x - 1)));
+    return;
+  }
+// Default to two.sided
+  mnhyper f(m,n,k,x);
+  f.dn(true);
+  res->setDouble(f(1));
+}
+
+/*
  * @brief Hypergeometric probability density function
  * @param x (double) The number of white balls drawn without replacement
  *           from an urn that contains both black and white balls.
@@ -287,7 +343,7 @@ superfun_dhyper(const Value** args, Value *res, void*)
  * @param m (double) The number of white balls in the urn.
  * @param n (double) The number of black balls in the urn.
  * @param k (double) The number of balls drawn from the urn. 
- * @param lower_tail (boolean) TRUE for lowe tail quantile, FALSE for upper.
+ * @param lower_tail (boolean) TRUE for lower tail quantile, FALSE for upper.
  * @returns The hypergeometric cumulative distribution up to x
  */
 static void
@@ -344,6 +400,7 @@ REGISTER_FUNCTION(dhyper, list_of("double")("double")("double")("double"), "doub
 REGISTER_FUNCTION(phyper, list_of("double")("double")("double")("double")("bool"), "double", superfun_phyper);
 REGISTER_FUNCTION(qhyper, list_of("double")("double")("double")("double")("bool"), "double", superfun_qhyper);
 REGISTER_FUNCTION(fisher_test_odds_ratio, list_of("double")("double")("double")("double"), "double", superfun_conditional_odds_ratio);
+REGISTER_FUNCTION(fisher_test_p_value, list_of("double")("double")("double")("double")("string"), "double", superfun_fisher_p_value);
 
 // general class for registering/unregistering user defined SciDB objects
 static class superfunpack

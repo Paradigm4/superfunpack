@@ -26,17 +26,12 @@ Note that if you're *re-installing* superfunpack, you'll need to restart
 SciDB for the new plugin to take effect.
 
 
-## fisher\_test\_odds\_ratio
+## fisher\_test\_odds\_ratio and fisher\_test\_p\_value
 
-Estimate the conditional odds ratio for a one-sided Fisher's exact test for
-testing the null of independence of rows and columns in a 2x2 contingency table
-with fixed marginals.
-
-Use this function together with the `phyper` hypergeometric density function
-described below to conduct one-sided Fisher's exact tests on 2x2 contingency
-tables.  The SciDB examples below compute one-sided Fisher's exact tests
-corresponding to the `alternative=less` option in the R package, also shown for
-comparison.
+Estimate the conditional odds ratio or p value Fisher's exact test for testing
+the null of independence of rows and columns in a 2x2 contingency table with
+fixed marginals.  Use these functions together to conduct Fisher's exact tests
+on 2x2 contingency tables. 
 
 From the R documentation of fisher.test:
 
@@ -49,6 +44,7 @@ alternative hypothesis for a one-sided test is based on the odds ratio being
 smaller than the estimated value.
 
 
+
 ### Synopsis
 
 ```
@@ -58,6 +54,7 @@ double fisher_test_odds_ratio (double x, double m, double n, double k)
 > * m: Marginal sum of the 1st column ('yes' events in 1st class)
 > * n: Marginal sum of  the 2nd column ('no' events in 1st class)
 > * k: Marginal sum of the 1st row ('yes' events in 2nd class)
+> * alternative: indicates the alternative hypothesis and must be one of "two.sided", "less", or "greater"
 
 The following table illustrates the parameters x, m, n, and k in
 a contingency table comparing two classifications labeled I and II:
@@ -71,17 +68,20 @@ a contingency table comparing two classifications labeled I and II:
 
 ### Examples
 
-Consider the following examples computed in R:
-
+Consider the following three examples computed by R:
 ```R
 TeaTasting <- matrix(c(3, 1, 1, 3), nrow = 2)
 
 # The data look like:
 TeaTasting
+```
+```
      [,1] [,2]
 [1,]    3    1
 [2,]    1    3
-
+```
+OK, let's run a Fisher exact test:
+```R
 fisher.test(TeaTasting,alternative="less")
 
       Fisher's Exact Test for Count Data
@@ -94,19 +94,24 @@ alternative hypothesis: true odds ratio is less than 1
 sample estimates:
 odds ratio 
   6.408309 
-
-
-
+```
+Here is a second example, also taken from the R documentation:
+```R
 Convictions <- matrix(c(2, 10, 15, 3), nrow = 2)
 
 # These data look like:
 Convictions
+```
+```
      [,1] [,2]
 [1,]    2   15
 [2,]   10    3
-
-fisher.test(Convictions,alternative="less")
-
+```
+Compute a one-sided exact test:
+```R
+fisher.test(Convictions, alternative="less")
+```
+```
       Fisher's Exact Test for Count Data
 
 data:  Convictions
@@ -118,34 +123,59 @@ sample estimates:
 odds ratio 
 0.04693661 
 ```
+And a two-sided test:
+```R
+fisher.test(Convictions, alternative="two.sided")
+```
+```
+        Fisher's Exact Test for Count Data
+
+data:  Convictions
+p-value = 0.0005367
+alternative hypothesis: true odds ratio is not equal to 1
+95 percent confidence interval:
+ 0.003325764 0.363182271
+sample estimates:
+odds ratio 
+0.04693661 
+```
 
 Let's compute the same tests in SciDB. First we use the table above to compute
-the x, m, n, and k values for each example. For the TeaTasting data, we have 
-x=3, m = n = k = 4. And for the Convictions table, we get x=2, m=12, 
-n=18, k=17.
+the x, m, n, and k values for each example. For the TeaTasting data, we have
+x=3, m = n = k = 4. And for the Convictions table, we get x=2, m=12, n=18, k=17.
 
-```
 TeaTasting table result:
-
+```
 apply(
   apply(build(<x:int64>[i=0:0,1,0],3),m,4,n,4,k,4),
-  pvalue, phyper(x,m,n,k,true),
+  pvalue, fisher_test_p_value(x,m,n,k,'less'),
   odds_ratio_estimate, fisher_test_odds_ratio(x,m,n,k)
 )
 {i} x, m, n, k, pvalue,   odds_ratio_estimate
 {0} 3, 4, 4, 4, 0.985714, 6.40832
+```
 
-
-Convictions table result:
-
+One-sided test convictions table result:
+```
 apply(
   apply(build(<x:int64>[i=0:0,1,0],2),m,12,n,18,k,17),
-  pvalue, phyper(x,m,n,k,true),
+  pvalue, fisher_test_p_value(x,m,n,k,'less'),
   odds_ratio_estimate, fisher_test_odds_ratio(x,m,n,k)
 )
 
 {i} x, m,  n,  k,  pvalue,      odds_ratio_estimate
 {0} 2, 12, 18, 17, 0.000465181, 0.0469366
+```
+
+Two-sided test convictions table result:
+```
+apply(
+  apply(build(<x:int64>[i=0:0,1,0],2),m,12,n,18,k,17),
+  pvalue, fisher_test_p_value(x,m,n,k,'two.sided'),
+  odds_ratio_estimate, fisher_test_odds_ratio(x,m,n,k)
+)
+{i} x, m,  n,  k,  pvalue,      odds_ratio_estimate
+{0} 2, 12, 18, 17, 0.000536724, 0.0469366
 ```
 
 In practice SciDB can compute Fisher's exact test across many contingency tables in one
