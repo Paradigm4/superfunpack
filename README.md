@@ -8,15 +8,15 @@ You'll need SciDB installed, along with the SciDB development header packages.
 The names vary depending on your operating system type, but they are the
 package that have "-dev" in the name. You *don't* need the SciDB source code to
 compile and install this.
-### Required development packages on RHEL and CentOS systems:
+#### Required development packages on RHEL and CentOS systems:
 ```
 yum install scidb-14.3-dev.x86_64 scidb-14.3-dev-tools.x86_64 scidb-14.3-dev-tools-dbg.x86_64 scidb-14.3-plugins-dbg.x86_64 scidb-14.3-libboost-devel.x86_64 scidb-14.3-libboost-static.x86_64
 ```
-### Required development packages on Ubuntu systems:
+#### Required development packages on Ubuntu systems:
 ```
 apt-get install scidb-14.3-dev scidb-14.3-dev-tools scidb-14.3-libboost1.54-dev scidb-14.3-libmpich2-dev scidb-14.3-libboost1.54-all-dev
 ```
-
+#### Compiling and installing:
 Run `make` and copy  the `libsuperfunpack.so` plugin to the `lib/scidb/plugins`
 directory on each of your SciDB cluster nodes. Here is an example:
 
