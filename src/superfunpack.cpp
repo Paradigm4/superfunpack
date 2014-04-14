@@ -240,19 +240,40 @@ hyper_mle(double x, double m, double n, double k)
   boost::uintmax_t max_iter=500;
   boost::math::tools::eps_tolerance<double> tol(30);
 
+// Check exceptional cases
+// x  u
+// y  v
+  double y = m - x;
+  double u = k - x;
+  double v = n - u;
+  if(x==0 || v==0) return 0;
+  if(u==0 || y==0) return INFINITY;
+
   double mu = f(1) + x;
 
   double root;
   Result bracket;
   if(mu>x)
   {
-    bracket = boost::math::tools::toms748_solve(f, 0.0000001, 1.0, tol, max_iter);
+    try
+    {
+      bracket = boost::math::tools::toms748_solve(f, 0.0000001, 1.0, tol, max_iter);
+    } catch(int e)
+    {
+      return 0;
+    }
     root    = bracket.first;
     if((f(bracket.first) * f(bracket.second)) >0) root = NAN;
   } else if(mu<x)
   {
     f.inv(true);
-    bracket = boost::math::tools::toms748_solve(f, 0.0000001, 1.0, tol, max_iter);
+    try
+    {
+      bracket = boost::math::tools::toms748_solve(f, 0.0000001, 1.0, tol, max_iter);
+    } catch(int e)
+    {
+      return 0;
+    }
     root    = 1/bracket.first;
     if((f(bracket.first) * f(bracket.second)) >0) root = NAN;
   } else
