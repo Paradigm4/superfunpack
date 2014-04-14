@@ -37,6 +37,9 @@ SciDB for the new plugin to take effect.
 
 ## fisher\_test\_odds\_ratio and fisher\_test\_p\_value
 
+See http://paradigm4.github.io/SciDBR/fisher.html  for the R package support
+for this function.
+
 Estimate the conditional odds ratio or p value Fisher's exact test for testing
 the null of independence of rows and columns in a 2x2 contingency table with
 fixed marginals.  Use these functions together to conduct Fisher's exact tests
