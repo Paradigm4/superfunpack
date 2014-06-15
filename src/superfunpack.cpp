@@ -142,6 +142,10 @@ pcrsgsub(const Value** args, Value *res, void*)
    }
    length = strlen(data.c_str());
    err = pcrs_execute(job, s, length, &result, &length);
+   if(err<0)
+   {
+     throw PLUGIN_USER_EXCEPTION("superfunpack", SCIDB_SE_UDO, SCIDB_USER_ERROR_CODE_START);
+   }
    res->setString(result);
    free(result);
    pcrs_free_job(job);

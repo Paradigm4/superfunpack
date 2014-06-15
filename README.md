@@ -339,6 +339,13 @@ iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(\'Paul Brown is a serious se
 {0} 'Paul Brown is a serious serious man.','Paul Brown is a silly silly man.'
 ```
 
+#### Example: Backreferences
+```
+iquery -aq "apply(build(<s:string>[i=1:1,1,0],'we,are,devo'),a,rsub(s,'s/([a-z]*),([a-z]*),([a-z]*)/\$3 \$2 \$1/'))"
+{i} s,a
+{1} 'we,are,devo','devo are we'
+```
+
 
 ## sleep 
 
