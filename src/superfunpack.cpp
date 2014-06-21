@@ -16,7 +16,7 @@
 * END_COPYRIGHT
 */
 
-/*  The stats functions below are adapted from the R source code:
+/*  The *hyper stats functions below are adapted from the R source code:
  *
  *  R : A Computer Language for Statistical Data Analysis
  *  Copyright (C) 1995, 1996  Robert Gentleman and Ross Ihaka
@@ -442,6 +442,176 @@ superfun_qhyper(const Value** args, Value *res, void*)
 }
 
 
+/* A support function for the user-visible 'book' function defined
+ * below. This function parses the specially-formatted book string defined
+ * in the book function below, placing its values into the supplied bid and
+ * ask map pointers.
+ */
+void
+parse_book(string X,
+           std::map<double,double> *bid,
+           std::map<double,double> *ask)
+{
+  char *comma, *pipe, *comma_saveptr, *pipe_saveptr, *endptr;
+  double d, price;
+  int j;
+  char *s  = strdup(X.c_str());
+
+  pipe = strtok_r(s, "|", &pipe_saveptr);
+  if(!pipe) return;
+/* Process the bid values */
+  comma = strtok_r(pipe, ",", &comma_saveptr);
+  j = 0;
+  while(comma)
+  {
+    d = strtod(comma, &endptr);
+    switch(j)
+    {
+      case 0:
+        if(comma != endptr)
+        {
+          price = d; // cache this price value
+        }
+        else
+        {
+          price = NAN;
+        }
+        break;
+      case 1:
+        if(comma != endptr)  // add a price/size entry to the book
+        {
+          if(bid->count(price) > 0)  // entry already on the book, sum
+          {
+            (*bid)[price] = (*bid)[price] + d;
+          } else   // add a new entry
+          {
+            (*bid)[price] = d;
+          }
+        }
+        break;
+    }
+    j = (j + 1) % 2;
+    comma = strtok_r(NULL, ",", &comma_saveptr);
+  }
+
+/* Process the ask values */
+  pipe = strtok_r(NULL, "|", &pipe_saveptr);
+  if(!pipe) return;
+  comma = strtok_r(pipe, ",", &comma_saveptr);
+  j = 0;
+  while(comma)
+  {
+    d = strtod(comma, &endptr);
+    switch(j)
+    {
+      case 0:
+        if(comma != endptr)
+        {
+          price = d; // cache this price value
+        }
+        else
+        {
+          price = NAN;
+        }
+        break;
+      case 1:
+        if(comma != endptr)  // add a price/size entry to the book
+        {
+          if(ask->count(price) > 0)  // entry already on the book, sum
+          {
+            (*ask)[price] = (*ask)[price] + d;
+          } else   // add a new entry
+          {
+            (*ask)[price] = d;
+          }
+        }
+        break;
+    }
+    j = (j + 1) % 2;
+    comma = strtok_r(NULL, ",", &comma_saveptr);
+  }
+}
+
+/* Consolidate two financial market order book strings. This assumes a
+ * very special formatting of the strings:
+ *
+ * bid_price_1, bid_size_1, bid_price_2, bid_size_2, ..., bid_price_m, bid_size_m |
+ * ask_price_1, ask_size_1, ask_price_2, ask_size_2, ..., ask_price_n, ask_size_n
+ *
+ * where the pipe symbol is used to separate the bid and ask sides and they can
+ * each have different numbers of entries that are comma-delimited.
+ */
+/*
+ * @brief Consolidate two financial market order book strings. This assumes a
+ * very special formatting of each string:
+ *
+ * bid_price_1, bid_size_1, bid_price_2, bid_size_2, ..., bid_price_m, bid_size_m |
+ * ask_price_1, ask_size_1, ask_price_2, ask_size_2, ..., ask_price_n, ask_size_n
+ *
+ * (note that bid and ask sides are separated by a vertical pipe character).
+ * @param x (string) A string order book representation.
+ * @param y (string) A string order book representation.
+ * @param depth (uint32) The maximum output book depth
+ * @returns A string representation of the consolidated book, limited to at
+ * most the indicated depth.
+ */
+static void
+book(const Value **args, Value *res, void*)
+{
+  char buf[128];
+  uint32_t j;
+  int k;
+  string X = (string) args[0]->getString();
+  string Y = (string) args[1]->getString();
+  uint32_t depth = (uint32_t)args[2]->getUint32();
+
+  std::map<double, double> bid;
+  std::map<double, double> ask;
+
+  parse_book(X, &bid, &ask);
+  parse_book(Y, &bid, &ask);
+
+  string ans  = "";
+  std::map<double,double>::iterator iter;
+
+/* Write out the consolidated bid prices in order up to indicated depth */
+  memset(buf, 0, 128);
+  j = 0;
+  k = 0;
+  for(iter = bid.begin(); iter != bid.end(); iter++)
+  {
+    if(bid.size() - j > depth)
+    {
+      ++j;
+      continue;
+    }
+    if(k==0)
+    {
+      snprintf(buf, 128, "%.3f, %.0f", iter->first, iter->second);
+      k = 1;
+    }
+    else     snprintf(buf, 128, ", %.3f, %.0f", iter->first, iter->second);
+    ans = ans + buf;
+    ++j;
+  }
+  ans = ans + " | ";
+
+/* Write out the consolidated ask prices in order, up to indicated depth */
+  memset(buf, 0, 128);
+  j = 0;
+  for(iter = ask.begin(); iter != ask.end(); iter++)
+  {
+    if(j==0) snprintf(buf, 128, "%.3f, %.0f", iter->first, iter->second);
+    else     snprintf(buf, 128, ", %.3f, %.0f", iter->first, iter->second);
+    ans = ans + buf;
+    ++j;
+    if(j >= depth) break;
+  }
+  res->setString(ans.c_str());
+}
+
+
+REGISTER_FUNCTION(book, list_of("string")("string")("uint32"), "string", book);
 REGISTER_FUNCTION(strpftime, list_of("string")("string")("string"), "string", pfconvert);
 REGISTER_FUNCTION(rsub, list_of("string")("string"), "string", pcrsgsub);
 REGISTER_FUNCTION(hashish, list_of("string"), "int64", string2l);
