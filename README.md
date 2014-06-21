@@ -386,7 +386,7 @@ iquery -aq "apply(build(<t: uint64>[i=1:3,3,0], i), zzz, sleep(t))"
 
 ## book
 
-An example financial market order book support function.o
+An example financial market order book support function.
 
 ### Synopsis
 ```
