@@ -8,14 +8,17 @@ You'll need SciDB installed, along with the SciDB development header packages.
 The names vary depending on your operating system type, but they are the
 package that have "-dev" in the name. You *don't* need the SciDB source code to
 compile and install this.
+
 #### Required development packages on RHEL and CentOS systems:
 ```
 yum install scidb-14.3-dev.x86_64 scidb-14.3-dev-tools.x86_64 scidb-14.3-dev-tools-dbg.x86_64 scidb-14.3-plugins-dbg.x86_64 scidb-14.3-libboost-devel.x86_64 scidb-14.3-libboost-static.x86_64 log4cxx-devel
 ```
+
 #### Required development packages on Ubuntu systems:
 ```
 apt-get install scidb-14.3-dev scidb-14.3-dev-tools scidb-14.3-libboost1.54-dev scidb-14.3-libmpich2-dev scidb-14.3-libboost1.54-all-dev liblog4cxx10-dev
 ```
+
 #### Compiling and installing:
 Run `make` and copy  the `libsuperfunpack.so` plugin to the `lib/scidb/plugins`
 directory on each of your SciDB cluster nodes. Here is an example:
@@ -25,15 +28,19 @@ git clone https://github.com/Paradigm4/superfunpack.git
 cd superfunpack
 make
 cp libsuperfunpack.so /opt/scidb/14.3/lib/scidb/plugins
+# (If the copy fails with an error, you might need to be root! Try this:)
+# sudo cp libsuperfunpack.so /opt/scidb/14.3/lib/scidb/plugins
+#
 # (Remember to scp libsuperfunpack.so to your other SciDB nodes too!)
 
 iquery -aq "load_library('superfunpack')"
 ```
-Remember to copy the plugin to all you SciDB cluster nodes.
+Remember to copy the plugin to all your SciDB cluster nodes!
 
 Note that if you're *re-installing* superfunpack, you'll need to restart
 SciDB for the new plugin to take effect.
 
+# Superfunpack functions
 
 ## fisher\_test\_odds\_ratio and fisher\_test\_p\_value
 
@@ -54,7 +61,6 @@ of the contingency table has a non-central hypergeometric distribution with
 non-centrality parameter given by the odds ratio (Fisher, 1935).  The
 alternative hypothesis for a one-sided test is based on the odds ratio being
 smaller than the estimated value.
-
 
 
 ### Synopsis
@@ -97,7 +103,7 @@ OK, let's run a Fisher exact test:
 ```R
 fisher.test(TeaTasting,alternative="less")
 
-      Fisher's Exact Test for Count Data
+      Fishers Exact Test for Count Data
 
 data:  TeaTasting
 p-value = 0.9857
@@ -361,7 +367,9 @@ uint32 (time)
 
 ### Description
 
-Invoke the sleep system call. Returns zero if the requested time has elapsed, or the number of seconds left to sleep, if the call was interrupted by a signal handler.
+Invoke the sleep system call. Returns zero if the requested time has elapsed,
+or the number of seconds left to sleep, if the call was interrupted by a signal
+handler.
 
 
 #### Example
@@ -375,6 +383,100 @@ iquery -aq "apply(build(<t: uint64>[i=1:3,3,0], i), zzz, sleep(t))"
 {2} 2,0
 {3} 3,0
 ```
+
+## book
+
+An example financial market order book support function.o
+
+### Synopsis
+```
+book( book_string_1,  book_string_2,  depth)
+```
+
+### Description
+The book function merges two market order books up to an indicated depth.
+The input order books are supplied as specially-formatted strings in the
+form:
+
+> bid&#95;price&#95;1, bid&#95;size&#95;1, bid&#95;price&#95;2, bid&#95;size&#95;2, ..., bid&#95;price&#95;m, bid&#95;size&#95;m  | ask&#95;price&#95;1, ask&#95;size&#95;1, ask&#95;price&#95;2, ask&#95;size&#95;2, ..., ask&#95;price&#95;n, ask&#95;size&#95;n
+
+That is the bid prices and sizes are listed as comma-separated values, followed
+by a vertical pipe symbol, followed by the ask prices and sizes. The bid and ask
+sides may contain different numbers of entries. 
+
+The two book entries are combined into a single book entry, summing sizes
+associated with common prices on the bid and ask sides (see the examples).
+
+The depth parameter controls the maximum book depth returned. The returned
+value is a string formatted as the input book values. Only the *best*
+(highest bid and lowest ask) prices up to the depth are reported.
+
+
+### Examples
+
+#### Merge two books, returning the full consolidated book
+(Well technically, up to depth 100000000.) Note that the books have
+different numbers of entries on their buy and ask sides.
+
+```
+iquery -aq "apply(apply(build(<a:string>[i=1:1,1,0],
+                     '1.0,100, 2.0,50, 3.0,25 | 4.0,100, 5.0,50'),
+                  b, '1.0,100, 2.0,25, 3.5,50| 5.0,100, 6.0,55, 7.0,100'),i
+             c, book(a, b, 100000000))"
+{i} a,b,c
+{1} '1.0,100, 2.0,50, 3.0,25 | 4.0,100, 5.0,50',
+    '1.0,100, 2.0,25, 3.5,50| 5.0,100, 6.0,55, 7.0,100',
+    '1.000, 200, 2.000, 75, 3.000, 25, 3.500, 50 | 4.000, 100, 5.000, 150, 6.000, 55, 7.000, 100'
+```
+
+#### A repeat of the last example, limiting the output book depth to two
+
+```
+iquery -aq "apply(apply(build(<a:string>[i=1:1,1,0],
+                     '1.0,100, 2.0,50, 3.0,25 | 4.0,100, 5.0,50'),
+                  b, '1.0,100, 2.0,25, 3.5,50| 5.0,100, 6.0,55, 7.0,100'),
+             c, book(a,b, 2))"
+{i} a,b,c
+{1} '1.0,100, 2.0,50, 3.0,25 | 4.0,100, 5.0,50',
+    '1.0,100, 2.0,25, 3.5,50| 5.0,100, 6.0,55, 7.0,100',
+    '3.000, 25, 3.500, 50 | 4.000, 100, 5.000, 150'
+```
+
+### Notes
+
+Bidd and ask price and size data are likely to occur as attributes in a SciDB
+array. In that case, you need to assemble the required input format string for
+the book type. Here is an example that first sets up an example array with data
+in attributes, and then creates a new array with the book representation of the
+same data:
+```
+iquery -aq "store( 
+              apply(
+                build(<bid_price_1:double>[i=1:1,1,0],10.0),
+                       bid_size_1, int16(100),
+                       bid_price_2, double(10.5),
+                       bid_size_2, int16(200),
+                       ask_price_1, double(10.9),
+                       ask_size_1, int16(150),
+                       ask_price_2, double(11.1),
+                       ask_size_2, int16(200)),
+              example_data)"
+
+{i} bid_price_1,bid_size_1,bid_price_2,bid_size_2,ask_price_1,ask_size_1,ask_price_2,ask_size_2
+{1} 10,         100,       10.5,       200,       10.9,       150,       11.1,       200
+
+# Now let's make this into a book-typed array:
+iquery -aq "project(
+              apply(example_data, book,
+                  string(bid_price_1) + ',' + string(bid_size_1) + ',' +
+                  string(bid_price_2) + ',' + string(bid_size_2) + '|' +
+                  string(ask_price_1) + ',' + string(ask_size_1) + ',' +
+                  string(ask_price_2) + ',' + string(ask_size_2)), book)"
+
+{i} book
+{1} '10,100,10.5,200,10.9,150,11.1,200'
+```
+
 
 ## Licenses
 
