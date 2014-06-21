@@ -444,7 +444,7 @@ iquery -aq "apply(apply(build(<a:string>[i=1:1,1,0],
 
 ### Notes
 
-Bidd and ask price and size data are likely to occur as attributes in a SciDB
+Bid and ask price and size data are likely to occur as attributes in a SciDB
 array. In that case, you need to assemble the required input format string for
 the book type. Here is an example that first sets up an example array with data
 in attributes, and then creates a new array with the book representation of the
