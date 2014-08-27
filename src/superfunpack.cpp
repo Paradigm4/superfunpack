@@ -340,7 +340,7 @@ superfun_conditional_odds_ratio(const Value** args, Value *res, void*)
  * @param n (double) The number of black balls in the urn.
  * @param k (double) The number of balls drawn from the urn. 
  * @param alternative (string) one of {"less","greater","two.sided"}
- * @returns The conditional odds ratio for the one-tailed Fisher exact test.
+ * @returns The Fisher exact test p-value.
  */
 static void
 superfun_fisher_p_value(const Value** args, Value *res, void*)
