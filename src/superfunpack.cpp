@@ -165,12 +165,27 @@ pfconvert(const Value** args, Value *res, void*)
 {
   struct tm tm;
   char buf[255];
-  std::string data = args[0]->getString();
-  std::string informat= args[1]->getString();
-  std::string outformat = args[2]->getString();
+  char *data = (char *)args[0]->getString();
+  char *informat= (char *)args[1]->getString();
+  char *outformat = (char *)args[2]->getString();
+
   memset(&tm, 0, sizeof(struct tm));
-  strptime(data.c_str(), informat.c_str(), &tm);
-  strftime(buf, sizeof(buf), outformat.c_str(), &tm);
+  strptime(data, informat, &tm);
+
+/* It turns out that many implementations of strptime are buggy and have
+ * problems with daylight savings time in the locale. We correc for this
+ * potential issue by explicitly setting the dst field to 'don't know'
+ * and asking mktime to handle it, then reconstruct the time with
+ * localtime_r. This approach seems to solve most of the bugs in strptime,
+ * and is a lot simpler than, for example, R--which completely replaces
+ * strptime with its own implementation!
+ */
+  tm.tm_isdst = -1;
+  time_t t = mktime(&tm);
+  memset(&tm, 0, sizeof(struct tm));
+  localtime_r(&t, &tm);
+
+  strftime(buf, sizeof(buf), outformat, &tm);
   res->setString(buf);
 }
 
@@ -455,7 +470,7 @@ parse_book(string X,
            std::map<double,double> *ask)
 {
   char *comma, *pipe, *comma_saveptr, *pipe_saveptr, *endptr;
-  double d, price;
+  double d, price=NAN;
   int j;
   char *s  = strdup(X.c_str());
 
@@ -622,8 +637,8 @@ REGISTER_FUNCTION(sleep, list_of("uint32"), "uint32", dream);
 REGISTER_FUNCTION(dhyper, list_of("double")("double")("double")("double"), "double", superfun_dhyper);
 REGISTER_FUNCTION(phyper, list_of("double")("double")("double")("double")("bool"), "double", superfun_phyper);
 REGISTER_FUNCTION(qhyper, list_of("double")("double")("double")("double")("bool"), "double", superfun_qhyper);
-REGISTER_FUNCTION(fisher_test_odds_ratio, list_of("double")("double")("double")("double"), "double", superfun_conditional_odds_ratio);
-REGISTER_FUNCTION(fisher_test_p_value, list_of("double")("double")("double")("double")("string"), "double", superfun_fisher_p_value);
+REGISTER_FUNCTION(Fisher_test_odds_ratio, list_of("double")("double")("double")("double"), "double", superfun_conditional_odds_ratio);
+REGISTER_FUNCTION(Fisher_test_p_value, list_of("double")("double")("double")("double")("string"), "double", superfun_fisher_p_value);
 
 // general class for registering/unregistering user defined SciDB objects
 static class superfunpack
