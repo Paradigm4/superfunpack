@@ -637,8 +637,8 @@ REGISTER_FUNCTION(sleep, list_of("uint32"), "uint32", dream);
 REGISTER_FUNCTION(dhyper, list_of("double")("double")("double")("double"), "double", superfun_dhyper);
 REGISTER_FUNCTION(phyper, list_of("double")("double")("double")("double")("bool"), "double", superfun_phyper);
 REGISTER_FUNCTION(qhyper, list_of("double")("double")("double")("double")("bool"), "double", superfun_qhyper);
-REGISTER_FUNCTION(Fisher_test_odds_ratio, list_of("double")("double")("double")("double"), "double", superfun_conditional_odds_ratio);
-REGISTER_FUNCTION(Fisher_test_p_value, list_of("double")("double")("double")("double")("string"), "double", superfun_fisher_p_value);
+REGISTER_FUNCTION(fishertest_odds_ratio, list_of("double")("double")("double")("double"), "double", superfun_conditional_odds_ratio);
+REGISTER_FUNCTION(fishertest_p_value, list_of("double")("double")("double")("double")("string"), "double", superfun_fisher_p_value);
 
 // general class for registering/unregistering user defined SciDB objects
 static class superfunpack
