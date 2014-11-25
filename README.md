@@ -337,12 +337,22 @@ iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(\'Paul Brown is a serious se
 {0} 'Paul Brown is a serious serious man.','Paul Brown is a silly serious man.'
 ```
 
+
 #### Example: Replace all occurrences of a substring
 
 ```
 iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(\'Paul Brown is a serious serious man.\')]',true), r, rsub(s,'s/serious/silly/g'))"
 {i} s,r
 {0} 'Paul Brown is a serious serious man.','Paul Brown is a silly silly man.'
+```
+
+#### Example: Search and replace characters by hexadecimal code
+We search for hex code 61, which corresponds to the 'a' character, replacing
+all occurences with 'o':
+```
+iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(\'The cat in the hat.\')]',true), r, rsub(s,'s/\x61/o/g'))"
+{i} s,r
+{0} 'The cat in the hat.','The cot in the hot.'
 ```
 
 #### Example: Backreferences
