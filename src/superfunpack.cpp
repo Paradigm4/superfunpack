@@ -303,7 +303,7 @@ hyper_mle(double x, double m, double n, double k)
     try
     {
       bracket = boost::math::tools::toms748_solve(f, 0.0000001, 1.0, tol, max_iter);
-    } catch(int e)
+    } catch(...)
     {
 fprintf(stderr,"x=%f m=%f n=%f k=%f\n",x,m,n,k);
       return 0;
@@ -316,7 +316,7 @@ fprintf(stderr,"x=%f m=%f n=%f k=%f\n",x,m,n,k);
     try
     {
       bracket = boost::math::tools::toms748_solve(f, 0.0000001, 1.0, tol, max_iter);
-    } catch(int e)
+    } catch(...)
     {
 fprintf(stderr,"x=%f m=%f n=%f k=%f\n",x,m,n,k);
       return 0;
