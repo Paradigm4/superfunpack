@@ -55,6 +55,7 @@
 #include "system/ErrorsLibrary.h"
 
 #include "pcrs.h"
+#include "R/fun.h"
 
 using namespace std;
 using namespace scidb;
@@ -213,12 +214,12 @@ class mnhyper
       int j, ns;
       double logncp, lo, hi, maxd, sumd, sum;
       if(invert && ncp!=0) ncp = 1/ncp;
-      hypergeometric_distribution <> h(m, k, m+n);
+//      hypergeometric_distribution <> h(m, k, m+n);
       lo = round(max(0.0, k-n));
       hi = round(min(k, m));
       ns = hi - lo + 1;
       if(ns<=0) return 0;
-      double relerr = 1.0000001;
+      double relerr = 1.000000001;
       double dj, xminuslo = 0;
       vector<double> support(ns);
       vector<double> logdc(ns);
@@ -230,7 +231,9 @@ class mnhyper
       for(j=0;j<ns;++j)
       {
         support[j] = lo + j;
-        logdc[j]   = log(boost::math::pdf(h,support[j]));
+// Not accurate:
+//        logdc[j]   = log(boost::math::pdf(h,support[j]));
+        logdc[j]   = dhyper (support[j], m, n, k, 1);
         d[j]       = logdc[j] + logncp*support[j];
         if(d[j] > maxd) maxd = d[j];
       }
@@ -279,11 +282,11 @@ mnhyper::dn(bool b)
 double
 hyper_mle(double x, double m, double n, double k)
 {
-  hypergeometric_distribution <> h(m, k, m+n);
+//  hypergeometric_distribution <> h(m, k, m+n);
   mnhyper f(m,n,k,x);
   typedef std::pair<double, double> Result;
-  boost::uintmax_t max_iter=500;
-  boost::math::tools::eps_tolerance<double> tol(30);
+  boost::uintmax_t max_iter=5000;
+  boost::math::tools::eps_tolerance<double> tol(52);
 
 // Check exceptional cases
 // x  u
@@ -294,7 +297,7 @@ hyper_mle(double x, double m, double n, double k)
   if(x==0 || v==0) return 0;
   if(u==0 || y==0) return INFINITY;
 
-  double mu = f(1) + x;
+  double mu = f(1);
 
   double root;
   Result bracket;
@@ -302,10 +305,9 @@ hyper_mle(double x, double m, double n, double k)
   {
     try
     {
-      bracket = boost::math::tools::toms748_solve(f, 0.0000001, 1.0, tol, max_iter);
+      bracket = boost::math::tools::toms748_solve(f, 0.00000001, 1.0, tol, max_iter);
     } catch(...)
     {
-fprintf(stderr,"x=%f m=%f n=%f k=%f\n",x,m,n,k);
       return 0;
     }
     root    = bracket.first;
@@ -315,10 +317,9 @@ fprintf(stderr,"x=%f m=%f n=%f k=%f\n",x,m,n,k);
     f.inv(true);
     try
     {
-      bracket = boost::math::tools::toms748_solve(f, 0.0000001, 1.0, tol, max_iter);
+      bracket = boost::math::tools::toms748_solve(f, 0.00000001, 1.0, tol, max_iter);
     } catch(...)
     {
-fprintf(stderr,"x=%f m=%f n=%f k=%f\n",x,m,n,k);
       return 0;
     }
     root    = 1/bracket.first;

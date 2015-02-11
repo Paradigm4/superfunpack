@@ -26,9 +26,11 @@ LIBS=-shared -Wl,-soname,libsuperfunpack.so -lpcre -L. -L"$(SCIDB_THIRDPARTY_PRE
 
 all:
 	@if test ! -d "$(SCIDB)"; then echo  "Error. Try:\n\nmake SCIDB=<PATH TO SCIDB INSTALL PATH>"; exit 1; fi
+	$(MAKE) -C R
 	$(CC) $(CFLAGS) -c pcrs.c -lpcre
-	$(CXX) $(CFLAGS) $(INC) -o libsuperfunpack.so pcrs.o plugin.cpp superfunpack.cpp $(LIBS)
+	$(CXX) $(CFLAGS) $(INC) -o libsuperfunpack.so pcrs.o R/bd0.o  R/dbinom.o  R/dhyper.o  R/stirlerr.o plugin.cpp superfunpack.cpp $(LIBS)
 	@echo "Now copy libsuperfunpack.so to your SciDB lib/scidb/plugins directory and restart SciDB."
 
 clean:
+	$(MAKE) -C R clean
 	rm -f *.so *.o
