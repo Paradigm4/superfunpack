@@ -57,6 +57,14 @@ iquery -aq "
     hsah, dumb_unhash(hash))"
 ```
 
+Another:
+```
+iquery -aq "apply(build(<s:string>[i=1:1,1,0],'{1}[(AAPL)]',true),hash,dumb_hash(s))"
+
+{i} s,hash
+{1} 'AAPL',1280328001
+```
+
 
 ## fisher\_test\_odds\_ratio and fisher\_test\_p\_value
 
