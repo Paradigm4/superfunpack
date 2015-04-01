@@ -21,26 +21,42 @@ apt-get install scidb-14.3-dev scidb-14.3-dev-tools scidb-14.3-libboost1.54-dev 
 
 #### Compiling and installing:
 Run `make` and copy  the `libsuperfunpack.so` plugin to the `lib/scidb/plugins`
-directory on each of your SciDB cluster nodes. Here is an example:
+directory on each of your SciDB cluster nodes.
 
+Or, use the SciDB `dev_tools` plugin:
 ```
-git clone https://github.com/Paradigm4/superfunpack.git
-cd superfunpack
-make
-cp libsuperfunpack.so /opt/scidb/14.3/lib/scidb/plugins
-# (If the copy fails with an error, you might need to be root! Try this:)
-# sudo cp libsuperfunpack.so /opt/scidb/14.3/lib/scidb/plugins
-#
-# (Remember to scp libsuperfunpack.so to your other SciDB nodes too!)
+iquery -aq "load_library('dev_tools')"
+iquery -aq "install_github('paradigm4/superfunpack')"
 
 iquery -aq "load_library('superfunpack')"
 ```
-Remember to copy the plugin to all your SciDB cluster nodes!
+Remember to copy the plugin to all your SciDB cluster nodes if you manually
+download and compile the plugin.
 
 Note that if you're *re-installing* superfunpack, you'll need to restart
 SciDB for the new plugin to take effect.
 
 # Superfunpack functions
+
+## Really trivial hash
+
+The `dumb_hash(string)` function converts up to the first seven bytes of
+its string argument to a signed int64 value. Characters past the seventh
+are ignored in the string and not hashed.
+
+The `dumb_unhash(int64)` function takes a signed int64 value and returns
+a string.
+
+Here is an example:
+```
+iquery -aq "
+  apply(
+    apply(
+      build(<s:string>[i=0:9,10,0],i),
+      hash, dumb_hash(s)),
+    hsah, dumb_unhash(hash))"
+```
+
 
 ## fisher\_test\_odds\_ratio and fisher\_test\_p\_value
 

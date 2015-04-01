@@ -71,15 +71,15 @@ using namespace boost::assign;
  * - Sleep, per chance to dream.
  *   <br> <br>
  *
- * @brief The functions: hashish and hsihsah,  strpftime and sleep.
+ * @brief The functions: dumb_hash, dumb_unhash,  strpftime and sleep.
  *
- * @par Synopsis: hashish (string) / hsihsah (int64), strpftime (string data,
+ * @par Synopsis: dumb_hash (string) /dumb_unhash (int64), strpftime (string data,
  * string input_format, string output_format), sleep(uint32 time)
  *
  * @par Examples:
  * <br>
- * apply(apply(build(<s:string>[i=0:9,10,0],i),hash,hashish(s)),hsah,
- * hsihsah(hash))
+ * apply(apply(build(<s:string>[i=0:9,10,0],i), hash, dumb_hash(s)), hsah,
+ * dumb_unhash(hash))
  *
  * apply(build(<s:string>[i=0:0,1,0],'{0}[(03-Mar-2012)]',true),x,strpftime(s, '%d-%m-%Y', '%U'))
  *
@@ -632,8 +632,8 @@ book(const Value **args, Value *res, void*)
 REGISTER_FUNCTION(book, list_of("string")("string")("uint32"), "string", book);
 REGISTER_FUNCTION(strpftime, list_of("string")("string")("string"), "string", pfconvert);
 REGISTER_FUNCTION(rsub, list_of("string")("string"), "string", pcrsgsub);
-REGISTER_FUNCTION(hashish, list_of("string"), "int64", string2l);
-REGISTER_FUNCTION(hsihsah, list_of("int64"), "string", l2string);
+REGISTER_FUNCTION(dumb_hash, list_of("string"), "int64", string2l);
+REGISTER_FUNCTION(dumb_unhash, list_of("int64"), "string", l2string);
 REGISTER_FUNCTION(sleep, list_of("uint32"), "uint32", dream);
 REGISTER_FUNCTION(dhyper, list_of("double")("double")("double")("double"), "double", superfun_dhyper);
 REGISTER_FUNCTION(phyper, list_of("double")("double")("double")("double")("bool"), "double", superfun_phyper);
