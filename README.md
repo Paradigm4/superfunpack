@@ -7,7 +7,8 @@ Miscellaneous scalar functions for SciDB that are super fun.
 You'll need SciDB installed, along with the SciDB development header packages.
 The names vary depending on your operating system type, but they are the
 package that have "-dev" in the name. You *don't* need the SciDB source code to
-compile and install this.
+compile and install this. Replace 'scidb-14.3' in the instructions below with your
+SciDB version.
 
 #### Required development packages on RHEL and CentOS systems:
 ```
