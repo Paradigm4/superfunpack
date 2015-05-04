@@ -2,41 +2,6 @@
 
 Miscellaneous scalar functions for SciDB that are super fun.
 
-## Installing the plug in
-
-You'll need SciDB installed, along with the SciDB development header packages.
-The names vary depending on your operating system type, but they are the
-package that have "-dev" in the name. You *don't* need the SciDB source code to
-compile and install this. Replace 'scidb-14.3' in the instructions below with your
-SciDB version.
-
-#### Required development packages on RHEL and CentOS systems:
-```
-yum install scidb-14.3-dev.x86_64 scidb-14.3-dev-tools.x86_64 scidb-14.3-dev-tools-dbg.x86_64 scidb-14.3-plugins-dbg.x86_64 scidb-14.3-libboost-devel.x86_64 scidb-14.3-libboost-static.x86_64 log4cxx-devel pcre-devel.x86_64
-```
-
-#### Required development packages on Ubuntu systems:
-```
-apt-get install scidb-14.3-dev scidb-14.3-dev-tools scidb-14.3-libboost1.54-dev scidb-14.3-libmpich2-dev scidb-14.3-libboost1.54-all-dev liblog4cxx10-dev libpcre3-dev
-```
-
-#### Compiling and installing:
-Run `make` and copy  the `libsuperfunpack.so` plugin to the `lib/scidb/plugins`
-directory on each of your SciDB cluster nodes.
-
-Or, use the SciDB `dev_tools` plugin:
-```
-iquery -aq "load_library('dev_tools')"
-iquery -aq "install_github('paradigm4/superfunpack')"
-
-iquery -aq "load_library('superfunpack')"
-```
-Remember to copy the plugin to all your SciDB cluster nodes if you manually
-download and compile the plugin.
-
-Note that if you're *re-installing* superfunpack, you'll need to restart
-SciDB for the new plugin to take effect.
-
 # Superfunpack functions
 
 ## Really trivial hash
@@ -512,6 +477,41 @@ iquery -aq "project(
 {1} '10,100,10.5,200,10.9,150,11.1,200'
 ```
 
+## Installing the plug in
+
+You'll need SciDB installed, along with the SciDB development header packages.
+The names vary depending on your operating system type, but they are the
+package that have "-dev" in the name. You *don't* need the SciDB source code to
+compile and install this. Replace 'scidb-14.3' in the instructions below with your
+SciDB version.
+
+#### Required development packages on RHEL and CentOS systems:
+```
+yum install scidb-14.3-dev.x86_64 scidb-14.3-dev-tools.x86_64 scidb-14.3-dev-tools-dbg.x86_64 scidb-14.3-plugins-dbg.x86_64 scidb-14.3-libboost-devel.x86_64 scidb-14.3-libboost-static.x86_64 log4cxx-devel pcre-devel.x86_64
+```
+
+#### Required development packages on Ubuntu systems:
+```
+apt-get install scidb-14.3-dev scidb-14.3-dev-tools scidb-14.3-libboost1.54-dev scidb-14.3-libmpich2-dev scidb-14.3-libboost1.54-all-dev liblog4cxx10-dev libpcre3-dev
+```
+
+## Installing the plug in
+
+You'll need SciDB installed. The easiest way to install and load the plugin is by using https://github.com/paradigm4/dev_tools
+
+Otherwise, you can build manually using the SciDB development header packages. The names vary depending on your operating system type, but they are the package that have "-dev" in the name. You *don't* need the SciDB source code to compile and install this.
+
+Run `make` and copy  `*.so` to the `lib/scidb/plugins`
+directory on each of your SciDB cluster nodes. Here is an example:
+
+```
+cd superfunpack
+make
+cp *.so /opt/scidb/14.8/lib/scidb/plugins
+
+iquery -aq "load_library('superfunpack')"
+```
+Remember to copy the plugin to __all__ your SciDB cluster nodes.
 
 ## Licenses
 
@@ -522,3 +522,4 @@ The code in superfunpack incorporates pcrs code Copyright (C) 2000, 2001 by
 Andreas S. Oesterhelt  <andreas@oesterhelt.org> (LGPL 2), R Copyright (C)
 1992-1996, 1998-2012 Free Software Foundation, Inc. (GPL 2), and boost (Boost
 Software License - Version 1.0 - August 17, 2003).
+
