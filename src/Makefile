@@ -20,15 +20,30 @@ ifeq ($(SCIDB_THIRDPARTY_PREFIX),)
 endif
 
 CFLAGS=-pedantic -W -Wextra -Wall -Wno-variadic-macros -Wno-strict-aliasing -Wno-long-long -Wno-unused-parameter -fPIC -D_STDC_FORMAT_MACROS -Wno-system-headers -isystem -O2 -g -DNDEBUG -ggdb3  -D_STDC_LIMIT_MACROS
+CXXFLAGS=-pedantic -W -Wextra -Wall -Wno-variadic-macros -Wno-strict-aliasing \
+         -Wno-long-long -Wno-unused-parameter -ggdb3 -O2 -fPIC
 INC=-I. -DPROJECT_ROOT="\"$(SCIDB)\"" -I"$(SCIDB_THIRDPARTY_PREFIX)/3rdparty/boost/include/" -I"$(SCIDB)/include"
 
 LIBS=-shared -Wl,-soname,libsuperfunpack.so -lpcre -L. -L"$(SCIDB_THIRDPARTY_PREFIX)/3rdparty/boost/lib" -L"$(SCIDB)/lib" -Wl,-rpath,$(SCIDB)/lib:$(RPATH) -lm
+
+# Compiler settings for SciDB version >= 15.7
+ifneq ("$(wildcard /usr/bin/g++-4.9)","")
+  CC := "/usr/bin/gcc-4.9"
+  CXX := "/usr/bin/g++-4.9"
+  CXXFLAGS+=-std=c++11 -DCPP11
+else
+  ifneq ("$(wildcard /opt/rh/devtoolset-3/root/usr/bin/gcc)","")
+    CC := "/opt/rh/devtoolset-3/root/usr/bin/gcc"
+    CXX := "/opt/rh/devtoolset-3/root/usr/bin/g++"
+    CXXFLAGS+=-std=c++11 -DCPP11
+  endif
+endif
 
 all:
 	@if test ! -d "$(SCIDB)"; then echo  "Error. Try:\n\nmake SCIDB=<PATH TO SCIDB INSTALL PATH>"; exit 1; fi
 	$(MAKE) -C R
 	$(CC) $(CFLAGS) -c pcrs.c -lpcre
-	$(CXX) $(CFLAGS) $(INC) -o libsuperfunpack.so pcrs.o R/bd0.o  R/dbinom.o  R/dhyper.o  R/stirlerr.o plugin.cpp superfunpack.cpp $(LIBS)
+	$(CXX) $(CXXFLAGS) $(INC) -o libsuperfunpack.so pcrs.o R/bd0.o  R/dbinom.o  R/dhyper.o  R/stirlerr.o plugin.cpp superfunpack.cpp $(LIBS)
 	@echo "Now copy libsuperfunpack.so to your SciDB lib/scidb/plugins directory and restart SciDB."
 
 clean:
