@@ -489,6 +489,17 @@ Software License - Version 1.0 - August 17, 2003).
 
 # Installing the plug in
 
+Some additional packages may be needed on your system. GCC is necessary to compile some C components; the pcre library is needed for regular expressions:
+```
+#Ubuntu:
+sudo apt-get install gcc
+sudo apt-get install libpcre3-dev
+
+#CentOS / RHEL:
+sudo yum install gcc
+sudo yum install pcre-devel
+```
+
 You'll need SciDB installed. The easiest way to install and load the plugin is by using https://github.com/paradigm4/dev_tools
 
 Otherwise, you can build manually using the SciDB development header packages. The names vary depending on your operating system type, but they are the package that have "-dev" in the name. You *don't* need the SciDB source code to compile and install this.
