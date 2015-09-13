@@ -97,9 +97,9 @@ static void
 string2l(const Value** args, Value *res, void*)
 {
   int64_t l;
-  char buf[9];
+  char buf[10];
   std::string s = args[0]->getString();
-  memset(buf,0,9);
+  memset(buf,0,10);
   snprintf(buf,9,"%s",s.c_str());
   memcpy(&l, buf, 8);
   res->setInt64(l);
