@@ -6,8 +6,8 @@ Miscellaneous scalar functions for SciDB that are super fun.
 
 ## Really trivial hash
 
-The `dumb_hash(string)` function converts up to the first seven bytes of
-its string argument to a signed int64 value. Characters past the seventh
+The `dumb_hash(string)` function converts up to the first eight bytes of
+its string argument to a signed int64 value. Characters past the eighth
 are ignored in the string and not hashed.
 
 The `dumb_unhash(int64)` function takes a signed int64 value and returns
