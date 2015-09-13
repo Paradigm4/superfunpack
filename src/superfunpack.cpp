@@ -98,11 +98,10 @@ string2l(const Value** args, Value *res, void*)
 {
   int64_t l;
   char buf[9];
-  std::string s = args[0]->getString();
   memset(buf,0,9);
-  snprintf(buf,9,"%s",s.c_str());
-  memmove((void *)&l, (void *)buf, 8);
-  res->setInt64(l);
+  snprintf(buf,9,"%s",args[0]->getString()); // <<-- problem ?? !!
+  memcpy((void *)&l, (void *)buf, 8);
+  res->setInt64(0);
 }
 
 static void
