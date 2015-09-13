@@ -97,11 +97,11 @@ static void
 string2l(const Value** args, Value *res, void*)
 {
   int64_t l;
-  char buf[10];
+  char buf[9];
   std::string s = args[0]->getString();
-  memset(buf,0,10);
+  memset(buf,0,9);
   snprintf(buf,9,"%s",s.c_str());
-  memcpy(&l, buf, 8);
+  memmove((void *)&l, (void *)buf, 8);
   res->setInt64(l);
 }
 
