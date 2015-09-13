@@ -102,9 +102,9 @@ string2l(const Value** args, Value *res, void*)
     return;
   }
   int64_t l;
-  char buf[9];
-  memset(buf,0,9);
-  snprintf(buf,9,"%s",args[0]->getString());
+  char buf[8];
+  memset(buf,0,8);
+  snprintf(buf,8,"%s",args[0]->getString());
   memcpy((void *)&l, (void *)buf, 8);
   res->setInt64(l);
 }
