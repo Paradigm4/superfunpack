@@ -96,17 +96,27 @@ using boost::math::hypergeometric_distribution;
 static void
 string2l(const Value** args, Value *res, void*)
 {
+  if(args[0]->isNull())
+  {
+    res->setNull(args[0]->getMissingReason());
+    return;
+  }
   int64_t l;
   char buf[9];
   memset(buf,0,9);
-  snprintf(buf,9,"%s",args[0]->getString()); // <<-- problem ?? !!
+  snprintf(buf,9,"%s",args[0]->getString());
   memcpy((void *)&l, (void *)buf, 8);
-  res->setInt64(0);
+  res->setInt64(l);
 }
 
 static void
 l2string(const Value** args, Value *res, void*)
 {
+  if(args[0]->isNull())
+  {
+    res->setNull(args[0]->getMissingReason());
+    return;
+  }
   char buf[9];
   memset(buf,0,9);
   int64_t l = (int64_t)args[0]->getInt64();
