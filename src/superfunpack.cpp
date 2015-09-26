@@ -71,10 +71,13 @@ using namespace boost::assign;
  * - Sleep, per chance to dream.
  *   <br> <br>
  *
- * @brief The functions: dumb_hash, dumb_unhash,  strpftime and sleep.
+ * - Sleep, per chance to dream, and delay provide test timing functions.
+ *   <br> <br>
+ *
+ * @brief The functions: dumb_hash, dumb_unhash,  strpftime, delay and sleep.
  *
  * @par Synopsis: dumb_hash (string) /dumb_unhash (int64), strpftime (string data,
- * string input_format, string output_format), sleep(uint32 time)
+ * string input_format, string output_format), sleep(uint32 time), delay(uint32 time, int64 retval)
  *
  * @par Examples:
  * <br>
@@ -131,6 +134,12 @@ dream(const Value** args, Value *res, void*)
   res->setUint32(sleep(l));
 }
 
+static void
+delay(const Value** args, Value *res, void*)
+{
+  sleep((uint32_t)args[0]->getUint32());
+  res->setInt64((int64_t)args[1]->getInt64());
+}
 
 static void
 pcrsgsub(const Value** args, Value *res, void*)
@@ -645,6 +654,7 @@ REGISTER_FUNCTION(rsub, list_of("string")("string"), "string", pcrsgsub);
 REGISTER_FUNCTION(dumb_hash, list_of("string"), "int64", string2l);
 REGISTER_FUNCTION(dumb_unhash, list_of("int64"), "string", l2string);
 REGISTER_FUNCTION(sleep, list_of("uint32"), "uint32", dream);
+REGISTER_FUNCTION(delay, list_of("uint32")("int64"), "int64", delay);
 REGISTER_FUNCTION(dhyper, list_of("double")("double")("double")("double"), "double", superfun_dhyper);
 REGISTER_FUNCTION(phyper, list_of("double")("double")("double")("double")("bool"), "double", superfun_phyper);
 REGISTER_FUNCTION(qhyper, list_of("double")("double")("double")("double")("bool"), "double", superfun_qhyper);
