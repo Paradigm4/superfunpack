@@ -648,6 +648,34 @@ book(const Value **args, Value *res, void*)
 }
 
 
+/* 
+ * @brief  Parse the data string into a floating point time value in seconds.
+ * @param data (string) input data, assumed to be in the form HH:MM:SS.S
+ * @returns double number of seconds since midnight
+ * XXX Beware no error checking! XXX
+ */
+static void
+tm2s(const Value** args, Value *res, void*)
+{
+  int j;
+  char *data, *p1, *token;
+  double s = 0;
+  for (j = 1, data = (char *) args[0]->getString(); ; j++, data=NULL)
+  {
+    token = strtok_r(data, ":", &p1);
+    if (token == NULL) break;
+    switch(j)
+    {
+      case 1: s = s + 3600 * ((double) atoi(token)); break;
+      case 2: s = s + 60 * ((double) atoi(token)); break;
+      case 3: s = s + (double)atof(token);
+    }
+  }
+  res->setDouble(s);
+}
+
+
+REGISTER_FUNCTION(tm2s, list_of("string"), "double", tm2s);
 REGISTER_FUNCTION(book, list_of("string")("string")("uint32"), "string", book);
 REGISTER_FUNCTION(strpftime, list_of("string")("string")("string"), "string", pfconvert);
 REGISTER_FUNCTION(rsub, list_of("string")("string"), "string", pcrsgsub);
