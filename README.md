@@ -33,7 +33,7 @@ iquery -aq "apply(build(<s:string>[i=1:1,1,0],'{1}[(AAPL)]',true),hash,dumb_hash
 ```
 
 
-## fisher\_test\_odds\_ratio and fisher\_test\_p\_value
+## fishertest\_odds\_ratio and fishertest\_p\_value
 
 See http://paradigm4.github.io/SciDBR/fisher.html  for the R package support
 for this function.
@@ -57,8 +57,8 @@ smaller than the estimated value.
 ### Synopsis
 
 ```
-double fisher_test_odds_ratio (double x, double m, double n, double k)
-double fisher_test_p_value (double x, double m, double n, double k, string alternative)
+double fishertest_odds_ratio (double x, double m, double n, double k)
+double fishertest_p_value (double x, double m, double n, double k, string alternative)
 ```
 > * x: Number of 'yes' events in both classifications (see table below)
 > * m: Marginal sum of the 1st column ('yes' events in 1st class)
@@ -158,8 +158,8 @@ TeaTasting table result:
 ```
 apply(
   apply(build(<x:int64>[i=0:0,1,0],3),m,4,n,4,k,4),
-  pvalue, fisher_test_p_value(x,m,n,k,'less'),
-  odds_ratio_estimate, fisher_test_odds_ratio(x,m,n,k)
+  pvalue, fishertest_p_value(x,m,n,k,'less'),
+  odds_ratio_estimate, fishertest_odds_ratio(x,m,n,k)
 )
 {i} x, m, n, k, pvalue,   odds_ratio_estimate
 {0} 3, 4, 4, 4, 0.985714, 6.40832
@@ -169,8 +169,8 @@ One-sided test convictions table result:
 ```
 apply(
   apply(build(<x:int64>[i=0:0,1,0],2),m,12,n,18,k,17),
-  pvalue, fisher_test_p_value(x,m,n,k,'less'),
-  odds_ratio_estimate, fisher_test_odds_ratio(x,m,n,k)
+  pvalue, fishertest_p_value(x,m,n,k,'less'),
+  odds_ratio_estimate, fishertest_odds_ratio(x,m,n,k)
 )
 
 {i} x, m,  n,  k,  pvalue,      odds_ratio_estimate
@@ -181,8 +181,8 @@ Two-sided test convictions table result:
 ```
 apply(
   apply(build(<x:int64>[i=0:0,1,0],2),m,12,n,18,k,17),
-  pvalue, fisher_test_p_value(x,m,n,k,'two.sided'),
-  odds_ratio_estimate, fisher_test_odds_ratio(x,m,n,k)
+  pvalue, fishertest_p_value(x,m,n,k,'two.sided'),
+  odds_ratio_estimate, fishertest_odds_ratio(x,m,n,k)
 )
 {i} x, m,  n,  k,  pvalue,      odds_ratio_estimate
 {0} 2, 12, 18, 17, 0.000536724, 0.0469366
@@ -213,7 +213,7 @@ m, n and k is:
 The p-quantile is defined as the smallest value x such that F(x) >= p, where F
 is the cumulative distribution function and 0 <= p <= 1.
 
-Use the phyper function together with the fisher_test_odds_ratio function above
+Use the phyper function together with the fishertest_odds_ratio function above
 to compute Fishers exact tests on 2x2 contingency tables.
 
 ### Synopsis
@@ -287,20 +287,20 @@ the name of the month, etc. It can understand any str[pf]time time format.
 #### Example 1: Pick out the week of the year.
 
 ```
-iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(03-Mar-2012)]',true), woy , int64(strpftime(s, '%d-%m-%Y', '%U')))"
+iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(04-Mar-2016)]',true), woy , int64(strpftime(s, '%d-%h-%Y', '%U')))"
 {i} s,woy
-{0} '03-Mar-2012',1
+{0} '04-Mar-2016',9
 ```
 
 #### Example 2: Print the full weekday name of a date in your locale.
 
 ```
-iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(03-Mar-2012)]',true), day ,strpftime(s, '%d-%m-%Y', '%A'))"
+iquery -aq "apply(build(<s:string>[i=0:0,1,0],'{0}[(04-Mar-2016)]',true), day ,strpftime(s, '%d-%h-%Y', '%A'))"
 {i} s,day
-{0} '03-Mar-2012','Sunday'
+{0} '04-Mar-2016','Friday'
 ```
 
-
+Consult [the documentation for strptime](http://www.gnu.org/software/libc/manual/html_node/Low_002dLevel-Time-String-Parsing.html) for more supported conversion formats.
 
 ## rsub
 
@@ -399,7 +399,9 @@ The book function merges two market order books up to an indicated depth.
 The input order books are supplied as specially-formatted strings in the
 form:
 
-> bid&#95;price&#95;1, bid&#95;size&#95;1, bid&#95;price&#95;2, bid&#95;size&#95;2, ..., bid&#95;price&#95;m, bid&#95;size&#95;m  | ask&#95;price&#95;1, ask&#95;size&#95;1, ask&#95;price&#95;2, ask&#95;size&#95;2, ..., ask&#95;price&#95;n, ask&#95;size&#95;n
+```
+bid_price_1, bid_size_1, bid_price_2, bid_size_2, ..., bid_price_m, bid_size_m  | ask_price_1, ask_size_1, ask_price_2, ask_size_2, ..., ask_price_n, ask_size_n
+```
 
 That is the bid prices and sizes are listed as comma-separated values, followed
 by a vertical pipe symbol, followed by the ask prices and sizes. The bid and ask
@@ -422,7 +424,7 @@ different numbers of entries on their buy and ask sides.
 ```
 iquery -aq "apply(apply(build(<a:string>[i=1:1,1,0],
                      '1.0,100, 2.0,50, 3.0,25 | 4.0,100, 5.0,50'),
-                  b, '1.0,100, 2.0,25, 3.5,50| 5.0,100, 6.0,55, 7.0,100'),i
+                  b, '1.0,100, 2.0,25, 3.5,50| 5.0,100, 6.0,55, 7.0,100'),
              c, book(a, b, 100000000))"
 {i} a,b,c
 {1} '1.0,100, 2.0,50, 3.0,25 | 4.0,100, 5.0,50',
@@ -475,7 +477,7 @@ iquery -aq "project(
                   string(ask_price_2) + ',' + string(ask_size_2)), book)"
 
 {i} book
-{1} '10,100,10.5,200,10.9,150,11.1,200'
+{1} '10,100,10.5,200|10.9,150,11.1,200'
 ```
 
 ## Licenses
