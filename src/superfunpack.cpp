@@ -674,6 +674,66 @@ tm2s(const Value** args, Value *res, void*)
   res->setDouble(s);
 }
 
+#define ROT32(x, y) ((x << y) | (x >> (32 - y))) // avoid effort
+static uint32_t murmur3_32(char const* key, uint32_t len, uint32_t const seed = 0x5C1DB123)
+{
+    static const uint32_t c1 = 0xcc9e2d51;
+    static const uint32_t c2 = 0x1b873593;
+    static const uint32_t r1 = 15;
+    static const uint32_t r2 = 13;
+    static const uint32_t m = 5;
+    static const uint32_t n = 0xe6546b64;
+    uint32_t hash = seed;
+    const int nblocks = len / 4;
+    const uint32_t *blocks = (const uint32_t *) key;
+    int i;
+    uint32_t k;
+    for (i = 0; i < nblocks; i++)
+    {
+        k = blocks[i];
+        k *= c1;
+        k = ROT32(k, r1);
+        k *= c2;
+        hash ^= k;
+        hash = ROT32(hash, r2) * m + n;
+    }
+    const uint8_t *tail = (const uint8_t *) (key + nblocks * 4);
+    uint32_t k1 = 0;
+    switch (len & 3)
+    {
+    case 3:
+        k1 ^= tail[2] << 16;
+    case 2:
+        k1 ^= tail[1] << 8;
+    case 1:
+        k1 ^= tail[0];
+        k1 *= c1;
+        k1 = ROT32(k1, r1);
+        k1 *= c2;
+        hash ^= k1;
+    }
+    hash ^= len;
+    hash ^= (hash >> 16);
+    hash *= 0x85ebca6b;
+    hash ^= (hash >> 13);
+    hash *= 0xc2b2ae35;
+    hash ^= (hash >> 16);
+    return hash;
+}
+
+static void
+murmur_hash(const Value** args, Value *res, void*)
+{
+  if(args[0]->isNull())
+  {
+    res->setNull(args[0]->getMissingReason());
+    return;
+  }
+  const char * key = args[0]->getString();
+  int64_t value = murmur3_32(key, strlen(key));
+  res->setInt64(value);
+}
+
 
 REGISTER_FUNCTION(tm2s, list_of("string"), "double", tm2s);
 REGISTER_FUNCTION(book, list_of("string")("string")("uint32"), "string", book);
@@ -688,6 +748,8 @@ REGISTER_FUNCTION(phyper, list_of("double")("double")("double")("double")("bool"
 REGISTER_FUNCTION(qhyper, list_of("double")("double")("double")("double")("bool"), "double", superfun_qhyper);
 REGISTER_FUNCTION(fishertest_odds_ratio, list_of("double")("double")("double")("double"), "double", superfun_conditional_odds_ratio);
 REGISTER_FUNCTION(fishertest_p_value, list_of("double")("double")("double")("double")("string"), "double", superfun_fisher_p_value);
+
+REGISTER_FUNCTION(murmur_hash, list_of("string"), "int64", murmur_hash);
 
 // general class for registering/unregistering user defined SciDB objects
 static class superfunpack
