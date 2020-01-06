@@ -56,6 +56,7 @@
 
 #include "pcrs.h"
 #include "R/fun.h"
+#include "MurmurHash3.h"
 
 using namespace std;
 using namespace scidb;
@@ -674,6 +675,46 @@ tm2s(const Value** args, Value *res, void*)
   res->setDouble(s);
 }
 
+static void
+murmur_hash_32(const Value** args, Value *res, void*)
+{
+  if(args[0]->isNull())
+  {
+    res->setNull(args[0]->getMissingReason());
+    return;
+  }
+  const char * key = args[0]->getString();
+  uint32_t const seed = 0x5C1DB123;
+  uint32_t value=0;
+  MurmurHash3_x86_32(key, strlen(key), seed, &value);
+   
+  res->setInt64(value);
+}
+
+static void
+murmur_city_hash_64(const Value** args, Value *res, void*)
+{
+  if(args[0]->isNull())
+  {
+    res->setNull(args[0]->getMissingReason());
+    return;
+  }
+ 
+  const char * key = args[0]->getString();
+  uint32_t const seed = 0x5C1DB123;
+  uint64_t x[2]; // create a 128-bit memory
+  MurmurHash3_x64_128(key, strlen(key), seed, &x);
+
+  // Adapted from Google city hash repo at https://github.com/google/cityhash/blob/8af9b8c2b889d80c22d6bc26ba0df1afb79a30db/src/city.h#L101
+  const uint64_t kMul = 0x9ddfea08eb382d69ULL;
+  uint64_t a = (x[0] ^ x[1]) * kMul;
+  a ^= (a >> 47);
+  uint64_t b = (x[1] ^ a) * kMul;
+  b ^= (b >> 47);
+  b *= kMul;
+ 
+  res->setInt64(b);
+}
 
 REGISTER_FUNCTION(tm2s, list_of("string"), "double", tm2s);
 REGISTER_FUNCTION(book, list_of("string")("string")("uint32"), "string", book);
@@ -688,6 +729,9 @@ REGISTER_FUNCTION(phyper, list_of("double")("double")("double")("double")("bool"
 REGISTER_FUNCTION(qhyper, list_of("double")("double")("double")("double")("bool"), "double", superfun_qhyper);
 REGISTER_FUNCTION(fishertest_odds_ratio, list_of("double")("double")("double")("double"), "double", superfun_conditional_odds_ratio);
 REGISTER_FUNCTION(fishertest_p_value, list_of("double")("double")("double")("double")("string"), "double", superfun_fisher_p_value);
+
+REGISTER_FUNCTION(murmur_hash_32, list_of("string"), "int64", murmur_hash_32);
+REGISTER_FUNCTION(murmur_city_hash_64, list_of("string"), "int64", murmur_city_hash_64);
 
 // general class for registering/unregistering user defined SciDB objects
 static class superfunpack
