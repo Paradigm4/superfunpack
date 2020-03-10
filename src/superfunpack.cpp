@@ -131,6 +131,11 @@ l2string(const Value** args, Value *res, void*)
 static void
 dream(const Value** args, Value *res, void*)
 {
+  if(args[0]->isNull())
+  {
+    res->setNull(args[0]->getMissingReason());
+    return;
+  }
   uint32_t l = (uint32_t)args[0]->getUint32();
   res->setUint32(sleep(l));
 }
@@ -138,6 +143,11 @@ dream(const Value** args, Value *res, void*)
 static void
 delay(const Value** args, Value *res, void*)
 {
+  if(args[0]->isNull() || args[1]->isNull())
+  {
+    res->setNull(0);
+    return;
+  }
   sleep((uint32_t)args[0]->getUint32());
   res->setInt64((int64_t)args[1]->getInt64());
 }
@@ -145,6 +155,11 @@ delay(const Value** args, Value *res, void*)
 static void
 pcrsgsub(const Value** args, Value *res, void*)
 {
+   if(args[0]->isNull() || args[1]->isNull() )
+   {
+     res->setNull(0);
+     return;
+   }
    pcrs_job *job;
    const char *e;
    char *s;
@@ -184,6 +199,14 @@ pcrsgsub(const Value** args, Value *res, void*)
 static void
 pfconvert(const Value** args, Value *res, void*)
 {
+  if(args[0]->isNull() || 
+     args[1]->isNull() ||
+     args[2]->isNull())
+  {
+    res->setNull(0);
+    return;
+  }
+
   struct tm tm;
   char buf[255];
   char *data = (char *)args[0]->getString();
@@ -363,6 +386,14 @@ hyper_mle(double x, double m, double n, double k)
 static void
 superfun_conditional_odds_ratio(const Value** args, Value *res, void*)
 {
+  if(args[0]->isNull() ||
+     args[1]->isNull() ||
+     args[2]->isNull() ||
+     args[3]->isNull() )    
+  {
+    res->setNull(0);
+    return;
+  }
   double x = args[0]->getDouble();
   double m = args[1]->getDouble();
   double n = args[2]->getDouble();
@@ -383,6 +414,15 @@ superfun_conditional_odds_ratio(const Value** args, Value *res, void*)
 static void
 superfun_fisher_p_value(const Value** args, Value *res, void*)
 {
+  if(args[0]->isNull() ||
+     args[1]->isNull() ||
+     args[2]->isNull() ||
+     args[3]->isNull() || 
+     args[4]->isNull())
+  {
+    res->setNull(0);
+    return;
+  }
   double x = args[0]->getDouble();
   double m = args[1]->getDouble();
   double n = args[2]->getDouble();
@@ -417,6 +457,14 @@ superfun_fisher_p_value(const Value** args, Value *res, void*)
 static void
 superfun_dhyper(const Value** args, Value *res, void*)
 {
+  if(args[0]->isNull() ||
+     args[1]->isNull() ||
+     args[2]->isNull() ||
+     args[3]->isNull())
+  {
+    res->setNull(0);
+    return;
+  }
   double x = args[0]->getDouble();
   double m = args[1]->getDouble();
   double n = args[2]->getDouble();
@@ -438,6 +486,14 @@ superfun_dhyper(const Value** args, Value *res, void*)
 static void
 superfun_phyper(const Value** args, Value *res, void*)
 {
+  if(args[0]->isNull() ||
+     args[1]->isNull() ||
+     args[2]->isNull() ||
+     args[3]->isNull())
+  {
+    res->setNull(0);
+    return;
+  }
   double x = args[0]->getDouble();
   double m = args[1]->getDouble();
   double n = args[2]->getDouble();
@@ -465,6 +521,14 @@ superfun_phyper(const Value** args, Value *res, void*)
 static void
 superfun_qhyper(const Value** args, Value *res, void*)
 {
+  if(args[0]->isNull() ||
+     args[1]->isNull() ||
+     args[2]->isNull() ||
+     args[3]->isNull())
+  {
+    res->setNull(0);
+    return;
+  }
   double p = args[0]->getDouble();
   double m = args[1]->getDouble();
   double n = args[2]->getDouble();
@@ -596,6 +660,14 @@ parse_book(string X,
 static void
 book(const Value **args, Value *res, void*)
 {
+  if(args[0]->isNull() ||
+     args[1]->isNull() ||
+     args[2]->isNull())
+  {
+    res->setNull(0);
+    return;
+  }
+
   char buf[128];
   uint32_t j;
   int k;
@@ -658,6 +730,11 @@ book(const Value **args, Value *res, void*)
 static void
 tm2s(const Value** args, Value *res, void*)
 {
+  if(args[0]->isNull())
+  {
+    res->setNull(args[0]->getMissingReason());
+    return;
+  }
   int j;
   char *data, *p1, *token;
   double s = 0;
